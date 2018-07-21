@@ -11,13 +11,17 @@ def new():
 @app.route("/print")
 def print_server():
     #GET DATA FROM WEBHOOKS
-    content = request.form
+    content = request.args
 
-    #CONVERT DATA TO STRINGS
-    str_content = str(content)
+    name = str(content.get('name'))
+    contact = str(content.get('contact'))
+    message = str(content.get('''message'''))
 
-    #PRINT DATA
-    return 'data: ' + str_content
+    return """
+    PARSED DATA: name: %s, 
+    contact: %s, message: 
+    %s""" % (name, contact, message)
+    
 
 if __name__ == '__main__':
-	app.run(debug=True, host='0.0.0.0')
+	app.run(debug=True)

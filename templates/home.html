@@ -16,13 +16,13 @@
     <div class="content">
         
         <h1>Richard <br>Hotline</h1>
-        <p>Does it sometimes seem like Richard has dissapeared from the world? Doesn't he awnser his phone? Neither his email? He might be buzzy behind his computer and not really thirsty for digital messages. In case of emergency, drop your message here and we will print it out and put it in front of his face.</p>
+        <p>Does it sometimes seem like Richard has dissapeared from the world? Doesn't he awnser his phone? Neither his email? He might be buzzy behind his computer and not really thirsty for digital messages. So, let's make some analog ones. Unfortunantly, postcards are quite slow. Our solotion: drop your message here and we will print it out and put it in front of his face.</p>
         <!-- warning: target is hardcoded -->
-        <form target="http://localhost:5000/print" action="http://localhost:5000/print" method="get">
-            <input type="text" value="" placeholder="Name">
-            <input type="text" placeholder="Email/Phone">
-            <textarea name="Message" id="" cols="30" rows="10" placeholder="message"></textarea>
-            <button type="submit" >Send</button>
+        <form name="newMessage" target="_self" action="http://localhost:5000/print" method="get">
+            <input name="name" type="text" value="" placeholder="Name">
+            <input name="contact" type="text" placeholder="Email/Phone">
+            <textarea name="message" cols="30" rows="10" placeholder="message"></textarea>
+            <button type="submit" >Send Message</button>
         </form>
     </div>
     <footer>

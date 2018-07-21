@@ -54,13 +54,18 @@ input, textarea {
 button {
     padding: 1% 5%;
     font-size: 1rem;
-    margin: 3% 0;
+    margin: 7% 0 3% 0;;
     background: red;
     opacity: 0.5;
     color: white;
     border: none;
     border-radius: 1rem;
     z-index: 100;
+}
+
+button:hover {
+    transition: ease-in-out 1000ms;
+    opacity: 0.80;
 }
 
 .notification {
