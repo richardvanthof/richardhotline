@@ -1,4 +1,4 @@
-![picture of a thermal printer](https://raw.githubusercontent.com/RichART-Official/richardhotline/master/hotline_preview.png)
+![picture of a thermal printer](https://github.com/RichART-Official/richardhotline/blob/master/hotline%20preview.png)
 # Hotline that prints messages in front of my face
 Since I'm not really prone to look at my phone people often can't reach me. To solve this I want to make the messages something fysical in my workspace and make them more 'in my face.' Inspired by [Thinkernut's Alexa Printer](https://www.hackster.io/tinkernut/cheap-alexa-printer-from-an-old-receipt-printer-c14ea2) am I going to do this by placing a thermal printer (like you find in stores) on my desk to which people in need can send messages. They can do this by going to a special super secret URL (aka a subdomain on my future website).
 ### Goals
