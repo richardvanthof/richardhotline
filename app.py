@@ -1,6 +1,7 @@
-from flask import Flask
-app = Flask('hotline')
+from flask import Flask, render_template
+app = Flask(__name__)
+app.debug = True
 
-@app.route('/')
-def hello_world():
-	return 'hello world!'
+@app.route("/")
+def new():
+    return render_template('home.html')
