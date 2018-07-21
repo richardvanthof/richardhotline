@@ -1,7 +1,5 @@
-from flask import Flask, render_template
-# from escpos.printer import Usb
+from flask import Flask, render_template, request
 
-# p = Usb(0x0416, 0x5011)
 app = Flask(__name__)
 
 app.debug = True
@@ -12,5 +10,14 @@ def new():
 
 @app.route("/print")
 def print_server():
-    return "PRINT SERVER HERE"
-    
+    #GET DATA FROM WEBHOOKS
+    content = request.form
+
+    #CONVERT DATA TO STRINGS
+    str_content = str(content)
+
+    #PRINT DATA
+    return 'data: ' + str_content
+
+if __name__ == '__main__':
+	app.run(debug=True, host='0.0.0.0')
