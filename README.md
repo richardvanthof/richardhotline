@@ -6,3 +6,7 @@ Since I'm not really prone to look at my phone people often can't reach me. To s
 - Make printer print mesages and personal information in a pre-specified format.
 - Save all messages in a database
 - Maybe Pushbullet integration to get an alert when I'm away from my hotline.
+### Dependencies
+- Flask
+- WTforms
+- python-escpos

@@ -9,6 +9,9 @@
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
 </head>
 <body>
+    <!-- <section class="notification">
+        <p>ERROR</p>
+    </section> -->
     <figure><img src="{{ url_for('static',filename='img/hotline-preview.png') }}" alt="Hotline"></figure>
     <div class="content">
         
@@ -18,7 +21,7 @@
             <input type="text" value="" placeholder="Name">
             <input type="text" placeholder="Email/Phone">
             <textarea name="Message" id="" cols="30" rows="10" placeholder="message"></textarea>
-            <button type="submit">Verzend bericht</button>
+            <button type="submit" >Verzend bericht</button>
         </form>
     </div>
     <footer>
