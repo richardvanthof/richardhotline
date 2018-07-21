@@ -17,8 +17,8 @@
         
         <h1>Richard <br>Hotline</h1>
         <p>Does it sometimes seem like Richard has dissapeared from the world? Doesn't he awnser his phone? Neither his email? He might be buzzy behind his computer and not really thirsty for digital messages. So, let's make some analog ones. Unfortunantly, postcards are quite slow. Our solotion: drop your message here and we will print it out and put it in front of his face.</p>
-        <!-- warning: target is hardcoded -->
-        <form name="newMessage" target="_self" action="http://localhost:5000/print" method="get">
+        <!-- WARNING: THE ACTION-URI HAS TO BE HARDCODED FOR A CLIENT ON AN EXTERNAL SERVER -->
+        <form name="newMessage" target="_self" action="/print">
             <input name="name" type="text" value="" placeholder="Name">
             <input name="contact" type="text" placeholder="Email/Phone">
             <textarea name="message" cols="30" rows="10" placeholder="message"></textarea>
