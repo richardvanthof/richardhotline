@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
+from escpos.printer import Usb
 
 app = Flask(__name__)
+p = Usb(0x0416, 0x5011)
 
 app.debug = True
 
@@ -17,11 +19,5 @@ def print_server():
     contact = str(content.get('contact'))
     message = str(content.get('''message'''))
 
-    return """
-    PARSED DATA: name: %s, 
-    contact: %s, message: 
-    %s""" % (name, contact, message)
-    
-
-if __name__ == '__main__':
-	app.run(debug=True)
+    body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)
+    p.text(body)
