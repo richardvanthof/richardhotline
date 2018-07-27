@@ -21,3 +21,5 @@ def print_server():
 
     body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)
     p.text(body)
+
+    return render_template('sucess.html')

@@ -6,6 +6,7 @@ body {
     background-color: rgb(247, 247, 247);
     color: black;
     margin: 0;
+    font-family: 'Nunito Sans', serif;
 }
 
 .content {
@@ -33,7 +34,8 @@ p {
 
 h1 {
     font-size: 3rem;
-    color: red;
+    color: hsl(0, 100%, 80%);
+    font-family: 'Volkhov', "Times New Roman", serif;
 }
 
 form {
@@ -51,19 +53,20 @@ input, textarea {
     color: black;
 }
 
-button {
+button, .button {
     padding: 1% 5%;
     font-size: 1rem;
     margin: 7% 0 3% 0;;
-    background: red;
+    background: rgb(67, 117, 255);
     opacity: 0.5;
     color: white;
     border: none;
     border-radius: 1rem;
     z-index: 100;
+    text-decoration: none;
 }
 
-button:hover {
+button:hover, .button:hover {
     transition: ease-in-out 1000ms;
     opacity: 0.80;
 }
@@ -97,7 +100,7 @@ button:hover {
 
     h1 {
         font-size: 7rem;
-        color: rgb(255, 72, 0);
+        line-height: 6rem;
     }
 
     p {
@@ -107,6 +110,6 @@ button:hover {
     .content {
         margin: 15% 25% 10% 15%;
         background: white;
-        padding: .5% 5%;
+        padding: 5% ;
     }
 }
