@@ -8,6 +8,26 @@ Since I'm not really prone to look at my phone, people often can't reach me. Thi
 - Save all messages in a database
 - Maybe Pushbullet integration to get an alert when I'm away from my hotline.
 ### Dependencies
+- Python 3
 - Flask
 - WTforms
 - python-escpos
+### Start Print Server
+<code>sudo python3 -m flask run --host=0.0.0.0</code>
+### Troubleshooting
+
+when executing the print server, I get the following message:
+<code> RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment.</code>
+Run the following commands:
+<code>
+	export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+</code>
+
+<code>ImportError: libtiff.so.5: cannot open shared object file: No such file or directory</code>
+Install libtiff5 <code>sudo apt install libtiff5</code>
+
+<code>usb.core.USBError: [Errno 13] Access denied (insufficient permissions)</code> Of course you can run in sudo-mode by using: <code>sudo python3 -m flask run --host=0.0.0.0</code>. Of course this is not ideal. Solution:
+1. <code>sudo nano /etc/udev/rules.d/99-com.rules</code>
+2. add the following line: <code>SUBSYSTEM=="usb", ATTR{idVendor}=="0416", ATTR{idProduct}=="5011", MODE="777"</code>
+

@@ -1,0 +1,18 @@
+@mixin before-after($content: ' ') {
+    display: block;
+    content: $content;
+}
+
+@mixin before($content: ' ') {
+    &::before {
+        @include before-after($content);
+        @content;
+    }
+}
+
+@mixin after($content: ' ') {
+    &::after {
+        @include before-after($content);
+        @content;
+    }
+}

@@ -1,0 +1,5 @@
+@mixin font-awesome($content) {
+    font-family: $font-awesome-font-family;
+    font-weight: 900;
+    content: $content;
+}

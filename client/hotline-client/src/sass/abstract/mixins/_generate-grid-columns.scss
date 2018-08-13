@@ -1,0 +1,14 @@
+@mixin generate-columns($breakpoint-keys: $breakpoints, $columns: $grid-columns-amount) {
+    [class^='col'] {
+        grid-column: span 12;
+    }
+    @each $breakpoint-name, $breakpoint-width in $breakpoint-keys {
+        @include min-width($breakpoint-width) {
+            @for $i from 1 to $columns + 1 {
+                .col-#{$breakpoint-name}-#{$i} {
+                    grid-column: span $i;
+                }
+            }
+        }
+    }
+}

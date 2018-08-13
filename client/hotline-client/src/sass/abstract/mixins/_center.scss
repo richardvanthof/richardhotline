@@ -1,0 +1,31 @@
+// Centers the content
+// If you only want to center vertically, add 'vertical' as the parameter
+// If you only want to center horizontally, add 'horizontal' as the parameter
+// If no $type is given, it will default to both
+@mixin center($type: 'both') {
+    display: flex;
+    @if $type == 'both' {
+        align-items: center;
+        justify-content: center;
+    } @else if $type == 'vertical' {
+        align-items: center;
+    } @else if $type == 'horizontal' {
+        justify-content: center;
+    }
+}
+
+@mixin center-both {
+    @include center;
+}
+
+@mixin center-b {
+    @include center;
+}
+
+@mixin center-v {
+    @include center('vertical');
+}
+
+@mixin center-h {
+    @include center('horizontal');
+}

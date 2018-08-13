@@ -1,0 +1,17 @@
+@mixin image-background(
+    $background: null,
+    $bg-attachment: center,
+    $bg-origin: content-box,
+    $bg-position: center,
+    $bg-repeat: no-repeat,
+    $bg-size: cover
+) {
+    @if $background {
+        background-image: $background;
+    }
+    background-attachment: $bg-attachment;
+    background-repeat: $bg-repeat;
+    background-position: $bg-position;
+    background-size: $bg-size;
+    background-origin: $bg-origin;
+}

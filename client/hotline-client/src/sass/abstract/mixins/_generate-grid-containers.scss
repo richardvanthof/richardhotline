@@ -1,0 +1,18 @@
+@mixin generate-containers ($container-max-widths-keys: $container-max-widths) {
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: auto;
+
+        &.not-centered {
+            margin: unset;
+        }
+    }
+    @each $breakpoint-width, $container-max-width in $container-max-widths-keys {
+        @include min-width($breakpoint-width) {
+            .container {
+                max-width: $container-max-width;
+            }
+        }
+    }
+}
