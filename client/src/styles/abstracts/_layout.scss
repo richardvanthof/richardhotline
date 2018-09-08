@@ -1,0 +1,22 @@
+html {
+    margin: 0;
+    padding: 0;
+    body{
+        margin: 0;
+        padding: 0;
+    }
+}
+figure {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    &.round {
+        border-radius: 1000rem;
+    }
+    img {
+        width: auto;
+        height: 100%;
+        background: white;
+    }
+}
+

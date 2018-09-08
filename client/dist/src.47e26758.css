@@ -1,0 +1,84 @@
+/*Colour Scheme */
+/*Typography*/
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
+html {
+  font-size: 18px; }
+  html body {
+    font-family: Monserrat, "Helvetica Neue", "Sans Serif", "Times New Roman";
+    font-weight: 400; }
+    html body h1, html body h2, html body h3, html body h4, html body h5, html body h6, html body input, html body textarea {
+      font-family: Monserrat, "Helvetica Neue", "Sans Serif", "Times New Roman";
+      font-weight: 700; }
+    html body p.small {
+      font-size: 0.5rem; }
+    html body img {
+      text-align: center;
+      max-width: 100%;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #ff9f1c; }
+    html body input, html body textarea {
+      font-size: 2rem; }
+    html body button {
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: .75rem;
+      color: #f71735; }
+
+@media screen and (min-width: 1200px) {
+  html {
+    font-size: 18px; } }
+
+body {
+  background: #fdfffc; }
+
+h1, h2, h3, h4, h5, h6, p {
+  color: #011627; }
+
+html {
+  margin: 0;
+  padding: 0; }
+  html body {
+    margin: 0;
+    padding: 0; }
+
+figure {
+  overflow: hidden;
+  margin: 0;
+  padding: 0; }
+  figure.round {
+    border-radius: 1000rem; }
+  figure img {
+    width: auto;
+    height: 100%;
+    background: white; }
+
+#notification {
+  background: #fdfffc; }
+  #notification figure {
+    width: 10rem;
+    height: 10rem; }
+
+#start figure {
+  width: 7rem;
+  height: 7rem; }
+
+input, textarea {
+  border: none; }
+
+button {
+  border: 0.1rem #f71735 solid;
+  padding: .75rem 1.5rem;
+  border-radius: 2rem;
+  background: transparent;
+  margin-right: .75rem; }
+  button:hover {
+    background: #f71735;
+    color: #fdfffc; }
+  button:focus {
+    border: 0.1rem #ff9f1c solid; }
+  button:active {
+    background: #ff9f1c; }
+
+#message {
+  background-color: #fdfffc; }
