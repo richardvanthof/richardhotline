@@ -1,0 +1,64 @@
+# Project specific
+node_modules/
+__pycache__/
+*.pyc
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# General
+build/
+dist/
+docs/
+.next/
+.cache/
+.env
+
+# Misc
+.idea/
+.env
+.npm
+coverage
+docs/
+.cache/
+
+# Code editors
+*.swp
+*.swo
+.idea/
+*.ipr
+*.iml
+*.iws
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Binaries
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.war
+*.ear
+*.sar
+*.class
+
+# Node specific
+node_modules/
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
