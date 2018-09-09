@@ -30,7 +30,7 @@ export class Message extends React.Component{
     
     handleInput(event) {
         this.setState(
-            { [event.target.name] : event.target.value}
+            { [event.target.name] : event.target.value }
         );
     }
 
@@ -71,25 +71,40 @@ export class Message extends React.Component{
         console.log("autoID: "+autoId);
         return autoId;
     }
-    
-
 
     generateFields(){
-        let i;
-        
-        return this.fields
+        const fields = [
+            {
+                type: 'text',
+                name: 'name',
+                value: this.state.name
+            },
+            {
+                type: 'email',
+                name: 'email',
+                value: this.state.email
+            },
+            {
+                type: 'tel',
+                name: 'phone',
+                value: this.state.phone
+            },
+        ];
+        return fields.map((field, count) => (
+            <TextField
+                key={ `input-${count}` }
+                type={ field.type }
+                name={ field.name }
+                value={ field.value }
+                onChange={ this.handleInput }
+            />
+        ));
     }
 
     render(){
-        let fields = []
-         /* name has to be equal to it's this.state.value */
         return (
             <form id="message">
-               
-                <TextField key="input-1" value={this.state.name} onChange={this.handleInput.bind(this)} name="name" type="text"></TextField>
-                <TextField key="input-2" value={this.state.email} onChange={this.handleInput.bind(this)} name="email" type="email"></TextField>
-                <TextField key="input-3" value={this.state.phone} onChange={this.handleInput.bind(this)} name="phone" type="text"></TextField>
-                <TextArea key="input-4" value={this.state.message} onChange={this.handleInput.bind(this)} name="message"></TextArea>
+                { this.generateFields() }
                 <button id="submit" onClick={this.handleSubmit.bind(this)}> Send Message</button>
             </form>
         )
