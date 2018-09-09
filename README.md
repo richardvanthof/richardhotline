@@ -2,13 +2,20 @@
 
 ## Requirements
 
-* NodeJS 6+
+* NodeJS 10
 * Python 3
 
 ## Installation
 
-* Install Python dependencies as described in printer/readme
-* Install Node depenencies in client folder, using `npm i`
+Run `make install-[env]`, where [env] i client, printer, or dev.
+
+## Running the application
+
+Run `make run-client` or `make run-printer` depending on which environment you are running.
+
+## Client build
+
+To build the client side of the application, run `make build-client`.
 
 ## License
 
