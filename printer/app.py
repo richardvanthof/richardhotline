@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify, make_response, abort
 import datetime
 from escpos.printer import Usb
 
 app = Flask(__name__)
 p = Usb(0x0416, 0x5011)
-
+print_jobs = []
 app.debug = True
 
 @app.route("/")
@@ -12,20 +12,18 @@ def new():
     return render_template('home.html')
 
 @app.route("/print")
-def print_server():
-    #GET DATA FROM WEBHOOKS
-    content = request.args
 
-    timestamp = datetime.datetime.now().timestamp()
-    name = str(content.get('name'))
-    phone = str(content.get('phone'))
-    email = str(content.get('email'))
-    message = str(content.get('''message'''))
+def print_message(data):
+
+    timestamp = str(data.get('date'))
+    name = str(data.get('name'))
+    phone = str(data.get('phone'))
+    email = str(data.get('email'))
+    message = str(data.get('''message'''))
 
     # body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)
     p.text("""
-
-
+    
 IMPORTANT MESSAGE:
 %s
 
@@ -42,6 +40,16 @@ Phone
 
 _______________________________
 ===============================
-"""% (timestamp, name, message, email, phone)) 
+"""% (timestamp, name, message, email, phone))
 
-    return render_template('sucess.html')
+@app.route("/print/api/message",  methods=['POST'])
+def post_messages():
+    if not request.get_json or not 'message' in request.json:
+        abort(400)
+    content = request.get_json()
+    print_message(content)
+    return "Message sent", 200
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
