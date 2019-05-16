@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+        _   _       _      __             _____               _            _   _
+        | \ | |     | |    / _|           |  __ \             | |          | | (_)
+        |  \| | ___ | |_  | |_ ___  _ __  | |__) | __ ___   __| |_   _  ___| |_ _  ___  _ __
+        | . ` |/ _ \| __| |  _/ _ \| '__| |  ___/ '__/ _ \ / _` | | | |/ __| __| |/ _ \| '_ \ 
+        | |\  | (_) | |_  | || (_) | |    | |   | | | (_) | (_| | |_| | (__| |_| | (_) | | | |
+        |_| \_|\___/ \__| |_| \___/|_|    |_|   |_|  \___/ \__,_|\__,_|\___|\__|_|\___/|_| |_|
+
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8" />
+    <title>Richard Hotline</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+</head>
+
+<body>
+    <script>
+        var form = document.getElementById('form');
+
+        form.onsubmit = function (e) {
+        // stop the regular form submission
+        e.preventDefault();
+
+        // collect the form data while iterating over the inputs
+        var data = {};
+        for (var i = 0, ii = form.length; i < ii; ++i) {
+            var input = form[i];
+            if (input.name) {
+            data[input.name] = input.value;
+            }
+        }
+
+        // construct an HTTP request
+        var xhr = new XMLHttpRequest();
+        xhr.open(form.method, form.action, true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+        // send the collected data as JSON
+        xhr.send(JSON.stringify(data));
+
+        xhr.onloadend = function () {
+            alert("message sent!")
+        };
+        };
+
+    </script>
+    <section class="notification">
+        <p>LOCAL VERSION - NOT FOR PRODUCTION USE</p>
+    </section>
+    <figure><img src="{{ url_for('static',filename='img/hotline-preview.png') }}" alt="Hotline"></figure>
+    <div class="content">
+
+        <h1>Richard <br>Hotline</h1>
+        <p>Does it sometimes seem like Richard has dissapeared from the world? Doesn't he awnser his phone? Neither his
+            email? He might be buzzy behind his computer and not really thirsty for digital messages. So, let's make
+            some analog ones. Unfortunantly, postcards are quite slow. Our solotion: drop your message here and we will
+            print it out and put it in front of his face.</p>
+        <!-- WARNING: THE ACTION-URI HAS TO BE HARDCODED FOR A CLIENT ON AN EXTERNAL SERVER -->
+
+        <form id="form" method="POST" name="newMessage" target="_self" action="/api/print">
+            <input name="ip" type="hidden" value="" placeholder="Name">
+            <input name="client" type="hidden" value="" placeholder="Name">
+            <input name="time" type="hidden" value="" placeholder="Name">
+            <input name="name" type="text" value="" placeholder="Name">
+            <input name="email" type="email" placeholder="Email">
+            <input name="phone" type="text" placeholder="Phone">
+            <textarea name="message" maxlength="140" cols="30" rows="10" placeholder="message"></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+    <footer>
+        <p class="footer-content">v0.1 Hotline Richard messaging system by RichART - IN DEVELOPMENT</p>
+    </footer>
+
+</body>
+
+</html>
