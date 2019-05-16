@@ -6,13 +6,15 @@ import Footer from '../components/Footer';
 import Nav from '../components/Nav';
 import Button from '../components/Button';
 import Form from '../components/Form';
+import Alert from '../components/Alert';
 
-import printer from '../static/images/printer.png';
+
+import face from '../static/images/richard/face_4.png';
 
 const typography = new Typography({
     title: "Rich Art One",
     baseFontSize: "18px",
-    baseLineHeight: 1.666,
+    baseLineHeight: 1.55,
     scaleRatio: 2,
     includeNormalize: true,
     headerFontFamily: [
@@ -41,9 +43,6 @@ const typography = new Typography({
         'blockquote > :last-child': {
           marginBottom: 0,
         },
-        'h1': {
-            color: 'white',
-        }
       }),
 
 })
@@ -53,13 +52,26 @@ typography.toString();
 // JS web apps.
 typography.injectStyles();
 
+const Body = styled.div`
+    background: whitesmoke;
+`
 
-function App() {
-    const Main = styled.main`
-        padding: 2em 1em;
-        min-height: 100%;
+const Start = styled.section`
+        min-height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: url('${face}'), black;
+
+
+    `
+    const Content = styled.div`
+        width: 100%;
+        max-width: 40rem;
+        padding: 3em;
+        background: bisque;
         animation: fadeIn 1s;
-
         @keyframes fadeIn {
             0% {
                 opacity: 0;
@@ -75,28 +87,43 @@ function App() {
             }
         }
     `
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
+        this.composeWindow = React.createRef();
+        this.state = {
+            displayComposeWindow: false
+        }
+    }
 
-    const Body = styled.div`
-        background: darkcyan;
-    `
-  return (
-    <Body className="App">
-        <Nav />
-        <Main>
-            <h1>Richard Hotline</h1>
-            <img src={printer} alt="printer" />
-            <p>Does it sometimes seem like Richard has dissapeared from the world?
-                Doesn't he awnser his phone? Neither his email? He might be buzzy
-                behind his computer and not really thirsty for digital messages.
-                So, let's make some analog ones. Unfortunantly, postcards are quite slow.
-                Our solotion: drop your message here and we will print it out
-                and put it in front of his face.</p>
-            <Button title="let's do this" url="#"/>
-        </Main>
-        <Form/>
-        <Footer />
-    </Body>
-  );
-}
+    handleClick(){
+        this.composeWindow.current.toggleDisplay();
+    }
+
+    render() {
+        return (
+            <Body className="App">
+                <main>
+                    <Start>
+                        <Content>
+                            <h1>Richard Hotline</h1>
+                                {/* <img src={printer} alt="printer" /> */}
+                            <p>Let's face it.Does it sometimes seem like Richard has dissapeared from the world?
+                                Doesn't he awnser his phone? Neither his email? He might be buzzy
+                                behind his computer and not really thirsty for digital messages.
+                                So, let's make some analog ones. Unfortunantly, postcards are quite slow.
+                                Our solotion: drop your message here and we will print it out
+                                and put it in front of his face.</p>
+                            <Button onClick={this.handleClick} title="Let's start"/>
+                        </Content>
+                    </Start>
+                    <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
+                </main>
+                <Footer />
+            </Body>
+        )
+    }
+};
 
 export default App;

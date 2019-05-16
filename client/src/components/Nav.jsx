@@ -4,12 +4,16 @@ import styled from 'styled-components';
 import logo from '../static/icons/logo.svg';
 
 const NavBase = styled.nav`
-    border-bottom: 0.25em solid black;
+    /* border-bottom: 0.25em solid black; */
     padding: 0.5em 1em;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: whitesmoke;
+    /* background: white; */
+    position: absolute;
+    left:0;
+    top:0;
+    width: 100%;
     h1, h2, h3, h4, h5, h6, a, p, img {
         margin: 0;
     }
