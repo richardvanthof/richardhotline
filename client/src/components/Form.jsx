@@ -25,11 +25,19 @@ const FormBase = styled.form`
     top: 0; */
     background: rgba(0,155,100,0.9);
 `
+const FormHeader = styled.header`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`
 
 const Form = () => {
     return (
         <FormBase>
-            <h1>Message...</h1>
+            <FormHeader>
+                <h1>Message...</h1>
+                <p>x</p>
+            </FormHeader>
             <FormInput/>
             <FormInput/>
             <FormTextArea/>
