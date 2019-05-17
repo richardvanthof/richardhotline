@@ -19,7 +19,7 @@ const FormTextArea = styled.textarea`
     resize: vertical;
 `
 
-const FormBase = styled.form`
+const FormBase = styled.div`
     padding: 0em;
     margin: 0;
     width:100%;
@@ -115,8 +115,50 @@ class Form extends React.Component {
         });
     }
 
+    serialise = (target) => {
+        let dataObject = {
+            name: target['name'],
+            contact: target['contact'],
+            message: target['message'],
+            date: target['date']
+        }
+        console.debug(dataObject);
+        let json = JSON.stringify(dataObject);
+        console.debug(json);
+        return json;
+    }
+
+    isValid = (target) => {
+        const name = target.name;
+        const contact = target.contact;
+        const message = target.message;
+        if(name.length <= 0 || contact.length <= 0 || message.length <= 0){
+            return {
+                valid: false,
+                error: "Please, fill in all fields"
+            }
+        }
+        if(name.length > 50 || contact.length > 50 || message.length > 300){
+            return {
+                valid: false,
+                error: "Please, make your message shorter"
+            }
+        }
+        return {
+            valid: true,
+            error: null
+        }
+    }
+
     handleSubmit = () => {
-        alert('submitted!')
+        const target = this.state;
+        let isValid = this.isValid(target);
+        console.log(isValid);
+        if(isValid.valid){
+            let data = this.serialise(target);
+        } else {
+            alert(isValid.error);
+        }
     }
 
     updateName
@@ -150,7 +192,7 @@ class Form extends React.Component {
                                 maxlength={this.maxLength}
                             />
                             <div>
-                            <Button onClick={this.handleSubmit} title="Send"/>
+                            <Button onClick={this.handleSubmit} href="#" title="Send"/>
                             </div>
 
                         </FormBase>
