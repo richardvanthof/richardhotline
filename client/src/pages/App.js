@@ -108,7 +108,6 @@ class App extends React.Component {
                     <Start>
                         <Content>
                             <h1>Richard Hotline</h1>
-                                {/* <img src={printer} alt="printer" /> */}
                             <p>Let's face it.Does it sometimes seem like Richard has dissapeared from the world?
                                 Doesn't he awnser his phone? Neither his email? He might be buzzy
                                 behind his computer and not really thirsty for digital messages.

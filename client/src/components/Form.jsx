@@ -16,6 +16,7 @@ const FormTextArea = styled.textarea`
     margin-bottom: 1em;
     min-height: 10em;
     border: black 0.15rem solid;
+    resize: vertical;
 `
 
 const FormBase = styled.form`
@@ -64,7 +65,7 @@ const FormWrapper = styled.section`
             transform: translateY(0);
         }
     }
-`
+`;
 
 const Cross = styled.a`
     width: 3rem;
@@ -80,8 +81,22 @@ class Form extends React.Component {
         super(props);
         this.toggleDisplay = this.toggleDisplay.bind(this);
         this.state = {
-            isActive: false
+            isActive: false,
+            name: '',
+            contact: '',
+            message: '',
+            date: ''
         }
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.maxLength = 150;
+    }
+
+    componentDidMount(){
+        this.setState(state => ({
+            date: new Date()
+        }))
+        console.log("New message initiated at" + this.state.date);
     }
 
     toggleDisplay = () =>{
@@ -90,13 +105,23 @@ class Form extends React.Component {
         }));
     }
 
-    handleClick = () => {
-        //function
+    handleInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState({
+        [name]: value
+        });
     }
 
+    handleSubmit = () => {
+        alert('submitted!')
+    }
+
+    updateName
     render(){
         const display = (displayMessage) => {
-            console.log(displayMessage);
             if (displayMessage){
                 return (
                     <FormWrapper>
@@ -105,10 +130,29 @@ class Form extends React.Component {
                                 <h1>Message...</h1>
                                 <Cross onClick={this.toggleDisplay}/>
                             </FormHeader>
-                            <FormInput placeholder="Your name"/>
-                            <FormInput placeholder="Email / Phone"/>
-                            <FormTextArea placeholder="Your message..."/>
-                            <Button onClick={this.handleClick} title="Send"/>
+                            <FormInput
+                                name="name"
+                                value={this.state.name}
+                               dasf onChange={this.handleInputChange}
+                                placeholder="Your name"
+                            />
+                            <FormInput
+                                name="contact"
+                                value={this.state.contact}
+                                onChange={this.handleInputChange}
+                                placeholder="Email / Phone"
+                            />
+                            <FormTextArea
+                                name="message"
+                                value={this.state.message}
+                                onChange={this.handleInputChange}
+                                placeholder="Your message..."
+                                maxlength={this.maxLength}
+                            />
+                            <div>
+                            <Button onClick={this.handleSubmit} title="Send"/>
+                            </div>
+
                         </FormBase>
                     </FormWrapper>
                 )
