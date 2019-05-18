@@ -93,7 +93,7 @@ class Form extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getNotifications = this.getNotifications.bind(this);
         this.addNotification = this.addNotification.bind(this);
-        this.clearNotificatinos = this.clearNotifications.bind(this);
+        this.clearNotifications = this.clearNotifications.bind(this);
         this.maxLength = 150;
     }
 
@@ -101,7 +101,10 @@ class Form extends React.Component {
         this.setState(state => ({
             date: new Date()
         }))
-        console.log("New message initiated at" + this.state.date);
+    }
+
+    componentWillUnmount() {
+        this.clearNotifications();
     }
 
     toggleDisplay = () =>{
@@ -151,9 +154,9 @@ class Form extends React.Component {
             message: target['message'],
             date: target['date']
         }
-        console.debug(dataObject);
+
         let json = JSON.stringify(dataObject);
-        console.debug(json);
+
         return json;
     }
 
@@ -183,7 +186,6 @@ class Form extends React.Component {
 
     handleSubmit = () => {
         let validation = this.isValid(this.state);
-        console.log(validation);
         if(validation.valid){
             let data = this.serialise();
 

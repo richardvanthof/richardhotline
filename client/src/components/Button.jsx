@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// import LoaderDots from '../components/Animations';
+import LoaderDots from '../components/Animations';
 
 const ButtonBase = styled.button`
     border: 0.15rem solid black;
@@ -24,21 +24,60 @@ const ButtonBase = styled.button`
     }
 `
 
+const DisabledBtn = styled(ButtonBase)`
+    cursor: not-allowed;
+    background-color: whitesmoke;
+    box-shadow: 0.1em 0.1em teal;
+    border: 0.15rem solid gray;
+    color: gray;
+    &:hover {
+        background-color: whitesmoke;
+        box-shadow: 0.1em 0.1em teal;
+        border: 0.15rem solid gray;
+        color: gray;
+    }
+`
 
+const LoadingBtn = styled(ButtonBase)`
+    cursor: progress;
+    background-color: whitesmoke;
+    box-shadow: 0.2em 0.2em teal;
+    border: 0.15rem solid gray;
+    color: gray;
+    padding: 0.5em 2em 0.2em 2em
+    &:hover {
+        background-color: whitesmoke;
+        box-shadow: 0.2em 0.2em teal;
+        border: 0.15rem solid gray;
+        color: gray;
+    }
+`
 
 class Button extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            isLoading: true
+
         }
     }
-
-
-
     render(){
+        const getButton = (type) => {
+            if(type === 'disabled') {
+                return (
+                    <DisabledBtn>{this.props.title}</DisabledBtn>
+                )
+            } else if(type === 'loading') {
+                return (
+                    <LoadingBtn>{this.props.title}<LoaderDots/></LoadingBtn>
+                )
+            } else {
+                return (
+                    <ButtonBase onClick={this.props.onClick} href={this.props.url}>{this.props.title}</ButtonBase>
+                )
+            }
+        }
         return (
-            <ButtonBase onClick={this.props.onClick} href={this.props.url}>{this.props.title}</ButtonBase>
+            getButton(this.props.type)
         )
     }
 }

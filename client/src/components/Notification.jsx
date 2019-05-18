@@ -42,13 +42,13 @@ class Notification extends React.Component {
         super(props);
         this.state = {
             isActive: true,
-            time: 5
+            time: 3
         }
         this.toggleDisplay = this.toggleDisplay.bind();
     }
 
     countDown = () => {
-        if (this.state.time < 0){
+        if (this.state.time <= 0){
             this.setState(state => ({
                 isActive: false
             }))
@@ -57,12 +57,11 @@ class Notification extends React.Component {
             this.setState(state => ({
                 time: newTime
             }))
-            console.log(newTime);
+
         }
     }
 
     componentDidMount(){
-        console.log('component mounted')
         if(!this.props.infinite){
             if (this.props.time) {
                 this.setState(state => ({
