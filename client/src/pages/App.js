@@ -13,8 +13,6 @@ import Embed from '../components/Embed';
 
 import face from '../static/images/richard/face_4.png';
 
-import isConnected from '../utils/connectivityCheck';
-
 const typography = new Typography({
     title: "Rich Art One",
     baseFontSize: "18px",
@@ -62,13 +60,10 @@ const Body = styled.div`
 
 const Start = styled.section`
         min-height: 100vh;
-
         display: flex;
         justify-content: center;
         align-items: center;
         background: url('${face}'), black;
-
-
     `
     const Content = styled.div`
         width: 100%;
@@ -97,17 +92,12 @@ class App extends React.Component {
         this.handleClick = this.handleClick.bind(this);
         this.composeWindow = React.createRef();
         this.state = {
-            displayComposeWindow: false,
-            online: isConnected()
+            displayComposeWindow: false
         }
     }
 
     componentDidMount(){
-        if(isConnected()){
 
-        } else {
-            return <Notification time="infinite" message="You are offline" />
-        }
     }
 
     handleClick(){
@@ -115,15 +105,6 @@ class App extends React.Component {
     }
 
     render() {
-        const ConnectivityCheck = (isConnected) => {
-            if(isConnected = false) {
-                return (
-                    <Notification time="infinite" message="You are offline" />
-                )
-            } else {
-                return <Notification time="infinite" message="You are online" />
-            }
-        }
         return (
             <Body className="App">
                 <ErrorBoundary>
@@ -141,8 +122,6 @@ class App extends React.Component {
                             </Content>
                         </Start>
                         <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
-
-
                     </main>
                     <Footer />
                 </ErrorBoundary>
