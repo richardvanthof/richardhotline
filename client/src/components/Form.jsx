@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Button from '../components/Button';
+import Notification from '../components/Notification';
+import PopUp from '../components/PopUp';
 
 const FormInput = styled.input`
     padding: 1em;
@@ -52,17 +54,16 @@ const FormWrapper = styled.section`
     position: absolute;
     top: 0;
     left: 0;
-    animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 0.35s ;
     @keyframes fadeIn {
         0%{
             opacity: 0;
-            filter: blur(10em);
-            transform: translateY(100vh);
+            scale(0);
         }
+
         100%{
             opacity: 1;
-            filter: blur(0)
-            transform: translateY(0);
+            transform: scale(1);
         }
     }
 `;
@@ -82,6 +83,7 @@ class Form extends React.Component {
         this.toggleDisplay = this.toggleDisplay.bind(this);
         this.state = {
             isActive: false,
+            notifications: [],
             name: '',
             contact: '',
             message: '',
@@ -89,6 +91,9 @@ class Form extends React.Component {
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.getNotifications = this.getNotifications.bind(this);
+        this.addNotification = this.addNotification.bind(this);
+        this.clearNotificatinos = this.clearNotifications.bind(this);
         this.maxLength = 150;
     }
 
@@ -103,6 +108,30 @@ class Form extends React.Component {
         this.setState(state => ({
             isActive: !state.isActive
         }));
+    }
+
+    getNotifications() {
+        const { notifications } = this.state;
+        return notifications.map(notification => (
+            <Notification
+                type={notification.type}
+                message={notification.message.solution}
+            />
+        ));
+    }
+
+    addNotification(type, message) {
+        const { notifications } = this.state;
+        notifications.push({
+            type,
+            message
+        });
+        console.debug(this.state.notifications)
+        this.setState({ notifications });
+    }
+
+    clearNotifications() {
+        this.setState({ notifications: [] });
     }
 
     handleInputChange = (event) => {
@@ -135,13 +164,15 @@ class Form extends React.Component {
         if(name.length <= 0 || contact.length <= 0 || message.length <= 0){
             return {
                 valid: false,
-                error: "Please, fill in all fields"
+                error: "All fields are required",
+                solution: "Please, fill in all fields"
             }
         }
         if(name.length > 50 || contact.length > 50 || message.length > 300){
             return {
                 valid: false,
-                error: "Please, make your message shorter"
+                error: "Message too long",
+                solution: "Please, fill in all fields"
             }
         }
         return {
@@ -151,23 +182,23 @@ class Form extends React.Component {
     }
 
     handleSubmit = () => {
-        const target = this.state;
-        let isValid = this.isValid(target);
-        console.log(isValid);
-        if(isValid.valid){
-            let data = this.serialise(target);
+        let validation = this.isValid(this.state);
+        console.log(validation);
+        if(validation.valid){
+            let data = this.serialise();
+
         } else {
-            alert(isValid.error);
+            this.addNotification('error', validation);
         }
     }
 
-    updateName
     render(){
         const display = (displayMessage) => {
             if (displayMessage){
                 return (
                     <FormWrapper>
                         <FormBase>
+
                             <FormHeader>
                                 <h1>Message...</h1>
                                 <Cross onClick={this.toggleDisplay}/>
@@ -194,8 +225,14 @@ class Form extends React.Component {
                             <div>
                             <Button onClick={this.handleSubmit} href="#" title="Send"/>
                             </div>
+                            {this.state.error === false &&
+                                <PopUp title="Your message will be printed shortly">
+                                    content
+                                </PopUp>
+                            }
 
                         </FormBase>
+                        {this.getNotifications()}
                     </FormWrapper>
                 )
             } else {
@@ -204,6 +241,7 @@ class Form extends React.Component {
         }
         return (
             display(this.state.isActive)
+
         )
     }
 }

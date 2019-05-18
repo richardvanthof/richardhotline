@@ -12,6 +12,7 @@ const ButtonBase = styled.button`
     transition: 0.1s ease;
     background-color: white;
     display: inline-block;
+    cursor: pointer;
     &:hover {
         box-shadow: 0.5em 0.5em teal;
     }
@@ -19,6 +20,7 @@ const ButtonBase = styled.button`
         background-color: whitesmoke;
         box-shadow: 0.2em 0.2em teal;
         border: 0.15rem solid gray;
+        color: gray;
     }
 `
 
@@ -37,7 +39,6 @@ class Button extends React.Component {
     render(){
         return (
             <ButtonBase onClick={this.props.onClick} href={this.props.url}>{this.props.title}</ButtonBase>
-
         )
     }
 }

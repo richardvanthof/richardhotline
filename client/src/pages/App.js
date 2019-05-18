@@ -6,10 +6,14 @@ import Footer from '../components/Footer';
 import Nav from '../components/Nav';
 import Button from '../components/Button';
 import Form from '../components/Form';
-import Alert from '../components/Alert';
-
+import PopUp from '../components/PopUp';
+import Notification from '../components/Notification';
+import ErrorBoundary from '../components/ErrorBoundary';
+import Embed from '../components/Embed';
 
 import face from '../static/images/richard/face_4.png';
+
+import isConnected from '../utils/connectivityCheck';
 
 const typography = new Typography({
     title: "Rich Art One",
@@ -93,7 +97,16 @@ class App extends React.Component {
         this.handleClick = this.handleClick.bind(this);
         this.composeWindow = React.createRef();
         this.state = {
-            displayComposeWindow: false
+            displayComposeWindow: false,
+            online: isConnected()
+        }
+    }
+
+    componentDidMount(){
+        if(isConnected()){
+
+        } else {
+            return <Notification time="infinite" message="You are offline" />
         }
     }
 
@@ -102,24 +115,37 @@ class App extends React.Component {
     }
 
     render() {
+        const ConnectivityCheck = (isConnected) => {
+            if(isConnected = false) {
+                return (
+                    <Notification time="infinite" message="You are offline" />
+                )
+            } else {
+                return <Notification time="infinite" message="You are online" />
+            }
+        }
         return (
             <Body className="App">
-                <main>
-                    <Start>
-                        <Content>
-                            <h1>Richard Hotline</h1>
-                            <p>Let's face it.Does it sometimes seem like Richard has dissapeared from the world?
-                                Doesn't he awnser his phone? Neither his email? He might be buzzy
-                                behind his computer and not really thirsty for digital messages.
-                                So, let's make some analog ones. Unfortunantly, postcards are quite slow.
-                                Our solotion: drop your message here and we will print it out
-                                and put it in front of his face.</p>
-                            <Button onClick={this.handleClick} title="Let's start"/>
-                        </Content>
-                    </Start>
-                    <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
-                </main>
-                <Footer />
+                <ErrorBoundary>
+                    <main>
+                        <Start>
+                            <Content>
+                                <h1>Richard Hotline</h1>
+                                <p>Let's face it.Does it sometimes seem like Richard has dissapeared from the world?
+                                    Doesn't he awnser his phone? Neither his email? He might be buzzy
+                                    behind his computer and not really thirsty for digital messages.
+                                    So, let's make some analog ones. Unfortunantly, postcards are quite slow.
+                                    Our solotion: drop your message here and we will print it out
+                                    and put it in front of his face.</p>
+                                <Button onClick={this.handleClick} title="Let's start"/>
+                            </Content>
+                        </Start>
+                        <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
+
+
+                    </main>
+                    <Footer />
+                </ErrorBoundary>
             </Body>
         )
     }
