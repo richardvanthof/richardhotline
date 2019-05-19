@@ -28,7 +28,7 @@ class PopUp extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            isActive: false
+            isActive: true
         }
         this.toggleDisplay = this.toggleDisplay.bind(this);
     }

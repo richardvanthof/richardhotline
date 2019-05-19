@@ -7,12 +7,12 @@ const NotificationBase = styled.dialog`
     top: 0;
     left: 0;
     width: 100%;
-    padding: 0.5em 1em;
+    padding: 1em;
     text-align: center;
     border: none;
     z-index: 10;
-    animation-delay: 0.3s;
-    animation: 1s fadeIn;
+    animation-delay: 0s;
+    animation: 0.5s fadeIn;
     @keyframes fadeIn {
         0% {
             opacity: 0;
@@ -32,8 +32,8 @@ const NotificationBase = styled.dialog`
 const Close = styled.a`
     display: inline;
     position: absolute;
-    top: 0.5em;
-    right: 1%;
+    top: 1em;
+    right: 2%;
     cursor: pointer;
 `
 
