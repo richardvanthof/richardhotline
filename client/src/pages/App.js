@@ -1,13 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import Typography from 'typography';
+import Typography from 'typography'
+
 
 import Footer from '../components/Footer';
 import Nav from '../components/Nav';
 import Button from '../components/Button';
 import Form from '../components/Form';
-import Alert from '../components/Alert';
-
+import PopUp from '../components/PopUp';
+import Notification from '../components/Notification';
+import ErrorBoundary from '../components/ErrorBoundary';
+import Embed from '../components/Embed';
 
 import face from '../static/images/richard/face_4.png';
 
@@ -46,11 +49,11 @@ const typography = new Typography({
       }),
 
 })
-// Output CSS as string.
-typography.toString();
-// Or insert styles directly into the <head> (works well for client-only
-// JS web apps.
-typography.injectStyles();
+
+typography.toString()
+typography.injectStyles()
+
+
 
 const Body = styled.div`
     background: whitesmoke;
@@ -58,13 +61,10 @@ const Body = styled.div`
 
 const Start = styled.section`
         min-height: 100vh;
-
         display: flex;
         justify-content: center;
         align-items: center;
         background: url('${face}'), black;
-
-
     `
     const Content = styled.div`
         width: 100%;
@@ -97,6 +97,10 @@ class App extends React.Component {
         }
     }
 
+    componentDidMount(){
+
+    }
+
     handleClick(){
         this.composeWindow.current.toggleDisplay();
     }
@@ -104,23 +108,24 @@ class App extends React.Component {
     render() {
         return (
             <Body className="App">
-                <main>
-                    <Start>
-                        <Content>
-                            <h1>Richard Hotline</h1>
-                                {/* <img src={printer} alt="printer" /> */}
-                            <p>Let's face it.Does it sometimes seem like Richard has dissapeared from the world?
-                                Doesn't he awnser his phone? Neither his email? He might be buzzy
-                                behind his computer and not really thirsty for digital messages.
-                                So, let's make some analog ones. Unfortunantly, postcards are quite slow.
-                                Our solotion: drop your message here and we will print it out
-                                and put it in front of his face.</p>
-                            <Button onClick={this.handleClick} title="Let's start"/>
-                        </Content>
-                    </Start>
-                    <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
-                </main>
-                <Footer />
+                <ErrorBoundary>
+                    <main>
+                        <Start>
+                            <Content>
+                                <h1>Richard Hotline</h1>
+                                <p>Let's face it.Does it sometimes seem like Richard has dissapeared from the world?
+                                    Doesn't he awnser his phone? Neither his email? He might be buzzy
+                                    behind his computer and not really thirsty for digital messages.
+                                    So, let's make some analog ones. Unfortunantly, postcards are quite slow.
+                                    Our solotion: drop your message here and we will print it out
+                                    and put it in front of his face.</p>
+                                <Button onClick={this.handleClick} title="Let's start"/>
+                            </Content>
+                        </Start>
+                        <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
+                    </main>
+                    <Footer />
+                </ErrorBoundary>
             </Body>
         )
     }

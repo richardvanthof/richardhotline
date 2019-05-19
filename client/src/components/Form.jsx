@@ -2,6 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Button from '../components/Button';
+import Notification from '../components/Notification';
+import PopUp from '../components/PopUp';
+import firebase from '../utils/firebase';
 
 const FormInput = styled.input`
     padding: 1em;
@@ -16,9 +19,10 @@ const FormTextArea = styled.textarea`
     margin-bottom: 1em;
     min-height: 10em;
     border: black 0.15rem solid;
+    resize: vertical;
 `
 
-const FormBase = styled.form`
+const FormBase = styled.div`
     padding: 0em;
     margin: 0;
     width:100%;
@@ -51,20 +55,19 @@ const FormWrapper = styled.section`
     position: absolute;
     top: 0;
     left: 0;
-    animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 0.35s ;
     @keyframes fadeIn {
         0%{
             opacity: 0;
-            filter: blur(10em);
-            transform: translateY(100vh);
+            scale(0);
         }
+
         100%{
             opacity: 1;
-            filter: blur(0)
-            transform: translateY(0);
+            transform: scale(1);
         }
     }
-`
+`;
 
 const Cross = styled.a`
     width: 3rem;
@@ -80,8 +83,31 @@ class Form extends React.Component {
         super(props);
         this.toggleDisplay = this.toggleDisplay.bind(this);
         this.state = {
-            isActive: false
+            isActive: false,
+            notifications: [],
+            status: '',
+            name: '',
+            contact: '',
+            message: '',
+            date: ''
         }
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.getNotifications = this.getNotifications.bind(this);
+        this.addNotification = this.addNotification.bind(this);
+        this.clearNotifications = this.clearNotifications.bind(this);
+        this.maxLength = 150;
+    }
+
+
+    componentDidMount(){
+        this.setState(state => ({
+            date: new Date()
+        }))
+    }
+
+    componentWillUnmount() {
+        this.clearNotifications();
     }
 
     toggleDisplay = () =>{
@@ -90,26 +116,175 @@ class Form extends React.Component {
         }));
     }
 
-    handleClick = () => {
-        //function
+    getNotifications() {
+        const { notifications } = this.state;
+        console.log(notifications);
+        return notifications.map(notification => (
+            <Notification
+                type={notification.type}
+                message={notification.message}
+            />
+        ));
+    }
+
+    addNotification(type, message) {
+        const { notifications } = this.state;
+        notifications.push({
+            type,
+            message
+        });
+
+        this.setState({ notifications });
+        console.debug(this.state.notifications)
+    }
+
+    clearNotifications() {
+        this.setState({ notifications: [] });
+    }
+
+    getPopUp = () => {
+        const status = this.state;
+        if( status === 'done'){
+            return (
+                <popUp title="Success!" description="Your message has been saved. But the printing service still has to be made :/">
+                </popUp>
+            )
+        } else if (status === 'loading') {
+            return (
+                <popUp title="Loading...">
+                </popUp>
+            )
+        } else {
+            return null
+        }
+    }
+
+
+    handleInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState({
+        [name]: value
+        });
+    }
+
+    isValid = (data) => {
+        if(data.name.length <= 0 || data.contact.length <= 0 || data.message.length <= 0){
+            return {
+                valid: false,
+                error: "All fields are required",
+                solution: "Please, fill in all fields"
+            }
+        }
+        if(data.name.length > 50 || data.contact.length > 50 || data.message.length > 300){
+            return {
+                valid: false,
+                error: "Message too long",
+                solution: "Please, fill in all fields"
+            }
+        }
+        return {
+            valid: true,
+            error: null,
+            solution: null
+        }
+    }
+
+    submit =() =>{
+        // Link firebase
+        const db = firebase.firestore();
+        // Fill in user the message is meant for
+        const USER = "Richard";
+        // Retreive message inforamtion
+        const {name, contact, message, date} = this.state;
+        // BUG: functino returns with undefined.
+        db.collection("Users").doc(USER).collection("Messages").add({
+            name: name,
+            contact: contact,
+            message: message,
+            timestamp: date
+        }).then((docRef) => {
+            console.log("Message saved with ID: ", docRef.id);
+            return {
+                done: true,
+                info: docRef
+            }
+        }).catch((error) => {
+            console.error("Error adding document: ", error);
+            return {
+                done: false,
+                info: error
+            };
+        });
+    }
+
+    handleSubmit = () => {
+        // Check if input (which is saved in state) is valid.
+        let validation = this.isValid(this.state);
+        if(validation.valid){
+            // valid: data is submitted
+            // BUG: this.submit(this.state) does not return result;
+            // Thus, submit.done is undefined.
+            let submit = this.submit(this.state);
+            console.log(submit);
+            // Check if message is posted sucessfully
+            if(submit.done){
+                // Valid: Success Pop Up will appear
+                this.setState(state => ({
+                    status: 'done'
+                }));
+                console.log("saving done");
+            } else {
+                // Not Valid: Notification with error will appear
+                this.addNotification('error', submit.info);
+                console.log("saving failed");
+            }
+
+        } else {
+            // not valid: notification (type: error) will appear on top of the screen with the reason.
+            this.addNotification('error', validation.solution);
+        }
     }
 
     render(){
         const display = (displayMessage) => {
-            console.log(displayMessage);
             if (displayMessage){
                 return (
                     <FormWrapper>
                         <FormBase>
+
                             <FormHeader>
                                 <h1>Message...</h1>
                                 <Cross onClick={this.toggleDisplay}/>
                             </FormHeader>
-                            <FormInput placeholder="Your name"/>
-                            <FormInput placeholder="Email / Phone"/>
-                            <FormTextArea placeholder="Your message..."/>
-                            <Button onClick={this.handleClick} title="Send"/>
+                            <FormInput
+                                name="name"
+                                value={this.state.name}
+                                onChange={this.handleInputChange}
+                                placeholder="Your name"
+                            />
+                            <FormInput
+                                name="contact"
+                                value={this.state.contact}
+                                onChange={this.handleInputChange}
+                                placeholder="Email / Phone"
+                            />
+                            <FormTextArea
+                                name="message"
+                                value={this.state.message}
+                                onChange={this.handleInputChange}
+                                placeholder="Your message..."
+                                maxlength={this.maxLength}
+                            />
+                            <div>
+                            <Button onClick={this.handleSubmit} href="#" title="Send"/>
+                            </div>
+
                         </FormBase>
+                        {this.getNotifications()}
+                        {this.getPopUp()}
                     </FormWrapper>
                 )
             } else {
@@ -118,6 +293,7 @@ class Form extends React.Component {
         }
         return (
             display(this.state.isActive)
+
         )
     }
 }
