@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Button from '../components/Button';
 import Notification from '../components/Notification';
 import PopUp from '../components/PopUp';
+import firebase from '../utils/firebase';
 
 const FormInput = styled.input`
     padding: 1em;
@@ -84,6 +85,7 @@ class Form extends React.Component {
         this.state = {
             isActive: false,
             notifications: [],
+            status: '',
             name: '',
             contact: '',
             message: '',
@@ -96,6 +98,7 @@ class Form extends React.Component {
         this.clearNotifications = this.clearNotifications.bind(this);
         this.maxLength = 150;
     }
+
 
     componentDidMount(){
         this.setState(state => ({
@@ -115,10 +118,11 @@ class Form extends React.Component {
 
     getNotifications() {
         const { notifications } = this.state;
+        console.log(notifications);
         return notifications.map(notification => (
             <Notification
                 type={notification.type}
-                message={notification.message.solution}
+                message={notification.message}
             />
         ));
     }
@@ -129,13 +133,32 @@ class Form extends React.Component {
             type,
             message
         });
-        console.debug(this.state.notifications)
+
         this.setState({ notifications });
+        console.debug(this.state.notifications)
     }
 
     clearNotifications() {
         this.setState({ notifications: [] });
     }
+
+    getPopUp = () => {
+        const status = this.state;
+        if( status === 'done'){
+            return (
+                <popUp title="Success!" description="Your message has been saved. But the printing service still has to be made :/">
+                </popUp>
+            )
+        } else if (status === 'loading') {
+            return (
+                <popUp title="Loading...">
+                </popUp>
+            )
+        } else {
+            return null
+        }
+    }
+
 
     handleInputChange = (event) => {
         const target = event.target;
@@ -147,31 +170,15 @@ class Form extends React.Component {
         });
     }
 
-    serialise = (target) => {
-        let dataObject = {
-            name: target['name'],
-            contact: target['contact'],
-            message: target['message'],
-            date: target['date']
-        }
-
-        let json = JSON.stringify(dataObject);
-
-        return json;
-    }
-
-    isValid = (target) => {
-        const name = target.name;
-        const contact = target.contact;
-        const message = target.message;
-        if(name.length <= 0 || contact.length <= 0 || message.length <= 0){
+    isValid = (data) => {
+        if(data.name.length <= 0 || data.contact.length <= 0 || data.message.length <= 0){
             return {
                 valid: false,
                 error: "All fields are required",
                 solution: "Please, fill in all fields"
             }
         }
-        if(name.length > 50 || contact.length > 50 || message.length > 300){
+        if(data.name.length > 50 || data.contact.length > 50 || data.message.length > 300){
             return {
                 valid: false,
                 error: "Message too long",
@@ -180,17 +187,64 @@ class Form extends React.Component {
         }
         return {
             valid: true,
-            error: null
+            error: null,
+            solution: null
         }
     }
 
+    submit =() =>{
+        // Link firebase
+        const db = firebase.firestore();
+        // Fill in user the message is meant for
+        const USER = "Richard";
+        // Retreive message inforamtion
+        const {name, contact, message, date} = this.state;
+        // BUG: functino returns with undefined.
+        db.collection("Users").doc(USER).collection("Messages").add({
+            name: name,
+            contact: contact,
+            message: message,
+            timestamp: date
+        }).then((docRef) => {
+            console.log("Message saved with ID: ", docRef.id);
+            return {
+                done: true,
+                info: docRef
+            }
+        }).catch((error) => {
+            console.error("Error adding document: ", error);
+            return {
+                done: false,
+                info: error
+            };
+        });
+    }
+
     handleSubmit = () => {
+        // Check if input (which is saved in state) is valid.
         let validation = this.isValid(this.state);
         if(validation.valid){
-            let data = this.serialise();
+            // valid: data is submitted
+            // BUG: this.submit(this.state) does not return result;
+            // Thus, submit.done is undefined.
+            let submit = this.submit(this.state);
+            console.log(submit);
+            // Check if message is posted sucessfully
+            if(submit.done){
+                // Valid: Success Pop Up will appear
+                this.setState(state => ({
+                    status: 'done'
+                }));
+                console.log("saving done");
+            } else {
+                // Not Valid: Notification with error will appear
+                this.addNotification('error', submit.info);
+                console.log("saving failed");
+            }
 
         } else {
-            this.addNotification('error', validation);
+            // not valid: notification (type: error) will appear on top of the screen with the reason.
+            this.addNotification('error', validation.solution);
         }
     }
 
@@ -208,7 +262,7 @@ class Form extends React.Component {
                             <FormInput
                                 name="name"
                                 value={this.state.name}
-                               dasf onChange={this.handleInputChange}
+                                onChange={this.handleInputChange}
                                 placeholder="Your name"
                             />
                             <FormInput
@@ -227,14 +281,10 @@ class Form extends React.Component {
                             <div>
                             <Button onClick={this.handleSubmit} href="#" title="Send"/>
                             </div>
-                            {this.state.error === false &&
-                                <PopUp title="Your message will be printed shortly">
-                                    content
-                                </PopUp>
-                            }
 
                         </FormBase>
                         {this.getNotifications()}
+                        {this.getPopUp()}
                     </FormWrapper>
                 )
             } else {

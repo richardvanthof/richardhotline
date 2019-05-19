@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import Typography from 'typography';
+import Typography from 'typography'
+
 
 import Footer from '../components/Footer';
 import Nav from '../components/Nav';
@@ -48,11 +49,11 @@ const typography = new Typography({
       }),
 
 })
-// Output CSS as string.
-typography.toString();
-// Or insert styles directly into the <head> (works well for client-only
-// JS web apps.
-typography.injectStyles();
+
+typography.toString()
+typography.injectStyles()
+
+
 
 const Body = styled.div`
     background: whitesmoke;
