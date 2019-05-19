@@ -3,6 +3,8 @@ import datetime
 from escpos.printer import Usb
 
 app = Flask(__name__)
+
+
 p = Usb(0x0416, 0x5011)
 
 print_jobs = []
@@ -12,8 +14,7 @@ def print_message(data):
 
     timestamp = str(data.get('date'))
     name = str(data.get('name'))
-    phone = str(data.get('phone'))
-    email = str(data.get('email'))
+    contact = str(data.get('contact'))
     message = str(data.get('''message'''))
 
     # body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)

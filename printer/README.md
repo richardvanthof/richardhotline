@@ -17,8 +17,8 @@ Since I'm not really prone to look at my phone, people often can't reach me. Thi
 
 - Python 3
 - Flask
-- WTforms
 - python-escpos
+- Firebase
 
 ### Start Print Server
 
@@ -30,12 +30,13 @@ To send messages to the printer with the REST API.
 path: <code>[YOUR DOMAIN]/print/api/message</code>
 This should be done in a json format. These are the accepted values:
 - name: string (mandatory)
-- email: string
-- phone: string
+- contact: string
 - date: timestamp
 - message: string
-- clientID: string
-- timesPrinted: number
+- printed: boolean
+
+### Authentification Firebase
+This project makes use of the Firebase API. Authenthicate your request by creating a service account in the Firebase console and adding the private key to ./printer/utils/ as serviceAccountKey.json. For obvious reasons the secret key is not stored in this repository and has to be added every time the project is set up.
 
 ### Troubleshooting
 
