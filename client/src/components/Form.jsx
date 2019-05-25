@@ -149,9 +149,9 @@ class Form extends React.Component {
                 <popUp title="Success!" description="Your message has been saved. But the printing service still has to be made :/">
                 </popUp>
             )
-        } else if (status === 'loading') {
+        } else if (status === 'failed') {
             return (
-                <popUp title="Loading...">
+                <popUp title="Something went wrong">
                 </popUp>
             )
         } else {
@@ -182,7 +182,7 @@ class Form extends React.Component {
             return {
                 valid: false,
                 error: "Message too long",
-                solution: "Please, fill in all fields"
+                solution: "Make your message shorter"
             }
         }
         return {
@@ -192,31 +192,18 @@ class Form extends React.Component {
         }
     }
 
-    submit =() =>{
+    submit = (post) =>{
         // Link firebase
         const db = firebase.firestore();
-        // Fill in user the message is meant for
+        // Fill in user the message is meant for (TODO: move to config file)
         const USER = "Richard";
-        // Retreive message inforamtion
-        const {name, contact, message, date} = this.state;
         // BUG: functino returns with undefined.
-        db.collection("Users").doc(USER).collection("Messages").add({
-            name: name,
-            contact: contact,
-            message: message,
-            timestamp: date
-        }).then((docRef) => {
+        db.collection("Users").doc(USER).collection("Messages").add(post).then((docRef) => {
             console.log("Message saved with ID: ", docRef.id);
-            return {
-                done: true,
-                info: docRef
-            }
+            return true;
         }).catch((error) => {
             console.error("Error adding document: ", error);
-            return {
-                done: false,
-                info: error
-            };
+            return false;
         });
     }
 
@@ -227,10 +214,17 @@ class Form extends React.Component {
             // valid: data is submitted
             // BUG: this.submit(this.state) does not return result;
             // Thus, submit.done is undefined.
-            let submit = this.submit(this.state);
+            let post = {
+                name: this.state.name,
+                contact: this.state.contact,
+                message: this.state.message,
+                timestamp: this.state.date,
+                printed: false
+            }
+            const submit = this.submit(post);
             console.log(submit);
             // Check if message is posted sucessfully
-            if(submit.done){
+            if(submit){
                 // Valid: Success Pop Up will appear
                 this.setState(state => ({
                     status: 'done'
@@ -238,7 +232,9 @@ class Form extends React.Component {
                 console.log("saving done");
             } else {
                 // Not Valid: Notification with error will appear
-                this.addNotification('error', submit.info);
+                this.setState(state => ({
+                    status: 'failed'
+                }));
                 console.log("saving failed");
             }
 

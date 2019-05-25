@@ -22,8 +22,8 @@ Since I'm not really prone to look at my phone, people often can't reach me. Thi
 
 ### Start Print Server
 
-<code>sudo python3 -m flask run --host=0.0.0.0</code>
-
+<code>FLASK_APP=app.py FLASK_DEBUG=1 python -m flask run</code>
+FLASK_APP=app.py FLASK_DEBUG=1 python -m flask run
 ### REST API
 
 To send messages to the printer with the REST API.
@@ -57,3 +57,8 @@ Install libtiff5 <code>sudo apt install libtiff5</code>
 
 1. <code>sudo nano /etc/udev/rules.d/99-com.rules</code>
 2. add the following line: <code>SUBSYSTEM=="usb", ATTR{idVendor}=="0416", ATTR{idProduct}=="5011", MODE="777"</code>
+
+**When Google Cloud throws authentification error, explicitly set the path to your serviceAccountKey.json with the following command:*
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/utils/serviceAccountKey.json"
+```

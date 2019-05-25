@@ -61,18 +61,6 @@
             email? He might be buzzy behind his computer and not really thirsty for digital messages. So, let's make
             some analog ones. Unfortunantly, postcards are quite slow. Our solotion: drop your message here and we will
             print it out and put it in front of his face.</p>
-        <!-- WARNING: THE ACTION-URI HAS TO BE HARDCODED FOR A CLIENT ON AN EXTERNAL SERVER -->
-
-        <form id="form" method="POST" name="newMessage" target="_self" action="/api/print">
-            <input name="ip" type="hidden" value="" placeholder="Name">
-            <input name="client" type="hidden" value="" placeholder="Name">
-            <input name="time" type="hidden" value="" placeholder="Name">
-            <input name="name" type="text" value="" placeholder="Name">
-            <input name="email" type="email" placeholder="Email">
-            <input name="phone" type="text" placeholder="Phone">
-            <textarea name="message" maxlength="140" cols="30" rows="10" placeholder="message"></textarea>
-            <button type="submit">Send Message</button>
-        </form>
     </div>
     <footer>
         <p class="footer-content">v0.1 Hotline Richard messaging system by RichART - IN DEVELOPMENT</p>
