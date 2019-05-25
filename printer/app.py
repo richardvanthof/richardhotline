@@ -2,7 +2,7 @@
 
 # Import dependencies web server
 from flask import Flask, render_template, request, jsonify, make_response, abort
-import datetime
+import datetime, sched, time, threading
 
 # Import dependencies receipt printer
 from escpos.printer import Usb, Dummy
@@ -48,17 +48,19 @@ def init_printer():
 p = init_printer()
 db = firestore.Client(credentials=credentials)
 
-
 app.debug = True
 
 def get_data():
-
+    # Deletes all messages in memory and downloads newst batch from server
+    del messages[:]
     db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False).order_by(u'timestamp')
 
     try:
         docs = db_ref.get()
         for doc in docs:
             messages.append([doc.id, doc.to_dict()])
+        print messages
+        return True
     except google.cloud.exceptions.NotFound:
         print 'No such document found'
         return "failed"
@@ -125,6 +127,27 @@ def delete_from_printque(message):
         print("Removing message from print que failed")
         return False
 
+
+
+def fetch():
+    while(messages <= 0):
+        get_data()
+    while(messages > 0):
+        try:
+            handle_incomming_messages()
+        except:
+            fetch();
+
+
+
+def init():
+    try:
+        handle_incomming_messages()
+    except:
+        get_data()
+
+
+
 @app.route("/")
 def new():
     return '''
@@ -144,12 +167,14 @@ def new():
             }
             li {
                 margin-right: 0.5em;
-                transition: 0.1s ease;
-                background-color: gainsboro;
+                transition: 0.2s ease;
+                background-color: rgba(0,0,0,0.05);
+                box-shadow: 0em 0em rgba(0,0,0,0);
             }
 
             li:hover {
                 background-color: aquamarine;
+                box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.05);
             }
         </style>
         <div style="padding: 5em; max-width: 75em">
@@ -214,17 +239,6 @@ def get_rows(posts):
     table = " ".join(rows)
     return(table)
 
-@app.route("/api/getmessages")
-def manually_handle_incomming_message():
-    get_data()
-    for message in messages:
-        print_message(message[1])
-    return "connected"
-
-@app.route("/settings")
-def settings():
-    return "Feature not yet available"
-
 @app.route("/getmessages")
 def handle_incomming_messages():
     get_data()
@@ -239,7 +253,16 @@ def handle_incomming_messages():
             else:
                 print("Error, message "+str(message[0])+" can't be printed. Printer seems unreachable. Please check cable.")
                 return handle_incomming_messages()
-        return "printing"
+    return "printing"
+
+@app.route("/settings")
+def settings():
+    return "Feature not yet available"
+
+@app.route("/getmessages")
+def handle():
+    if(handle_incomming_messages()):
+        return 'done'
 
 
 
@@ -256,7 +279,7 @@ def post_messages():
 # Resets the 'printed' status of all messages to False; should only be used for debugging
 def reset_printstatus():
     # Get target location
-    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages')
+    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', True)
     # Place where all post can be temporarily stored locally
     allPosts = []
 
@@ -298,6 +321,7 @@ def reset_printstatus():
 
     if(get_messages()):
         if(update_messages()):
+            print("Update Finished")
             return success_prompt
         else:
             return "Updating failed"
