@@ -204,6 +204,7 @@ class Form extends React.Component {
         }).catch((error) => {
             console.error("Error adding document: ", error);
             return false;
+
         });
     }
 
@@ -225,6 +226,7 @@ class Form extends React.Component {
             console.log(submit);
             // Check if message is posted sucessfully
             if(submit){
+
                 // Valid: Success Pop Up will appear
                 this.setState(state => ({
                     status: 'done'
