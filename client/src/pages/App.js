@@ -109,6 +109,7 @@ class App extends React.Component {
         return (
             <Body className="App">
                 <ErrorBoundary>
+
                     <main>
                         <Start>
                             <Content>
@@ -125,6 +126,19 @@ class App extends React.Component {
                         <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
                     </main>
                     <Footer />
+                    <PopUp
+                        title="Nobody is perfect, and especially not this app"
+                        description="Thank you for testing the Richard Hotline.
+                        Please take note that this program is still in development.
+                        This means that some bugs might occur"
+                    >
+                        <h3>Known errors</h3>
+                        <ul>
+                            <li>When clicking the send button no response in the
+                                UI is generated. Unless the program says otherwise,
+                                the message is still saved.</li>
+                        </ul>
+                    </PopUp>
                 </ErrorBoundary>
             </Body>
         )

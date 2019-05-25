@@ -11,6 +11,7 @@ const FormInput = styled.input`
     width:100%;
     margin-bottom: 1em;
     border: black 0.15rem solid;
+    color: ${props => props.error ? "red" : "black"};
 `
 
 const FormTextArea = styled.textarea`
@@ -99,7 +100,10 @@ class Form extends React.Component {
         this.maxLength = 150;
     }
 
-
+    maxLength = {
+        textField: 500,
+        textArea: 50
+    }
     componentDidMount(){
         this.setState(state => ({
             date: new Date()
@@ -164,7 +168,6 @@ class Form extends React.Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-
         this.setState({
         [name]: value
         });
@@ -178,7 +181,8 @@ class Form extends React.Component {
                 solution: "Please, fill in all fields"
             }
         }
-        if(data.name.length > 50 || data.contact.length > 50 || data.message.length > 300){
+        // Checks if input has no more charakters than specified in this.maxLength
+        if(data.name.length > this.maxLength.textField || data.contact.length > this.maxLength.textField || data.message.length > this.maxLength.textArea){
             return {
                 valid: false,
                 error: "Message too long",

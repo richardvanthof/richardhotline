@@ -15,7 +15,15 @@ const AlertBase = styled.div`
     top: 0;
     left: 0;
     width: 100%;
-
+    animation: 0.5s fadeIn ease-in-out;
+    @keyframes fadeIn {
+        0%{
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
 `
 
 const AlertContent = styled.div`
@@ -46,7 +54,6 @@ class PopUp extends React.Component {
                     <AlertBase>
                         <AlertContent>
                             <h1>{this.props.title}</h1>
-                            {this.props.children}
                             <p>
                                 {this.props.description}
                                 {
@@ -54,6 +61,7 @@ class PopUp extends React.Component {
                                     <small>Code {this.props.code}</small>
                                 }
                             </p>
+                            {this.props.children}
                             <Button onClick={this.toggleDisplay} title="ok" />
                         </AlertContent>
                     </AlertBase>
