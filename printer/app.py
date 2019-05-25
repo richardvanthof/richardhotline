@@ -44,15 +44,26 @@ def init_printer():
         print("NO PRINTER DETECTED. Dummy printer is being used instead.")
         print("If this is an error: please check the USB-cable")
         return Dummy()
+<<<<<<< HEAD
 
 p = init_printer()
 db = firestore.Client(credentials=credentials)
+=======
+
+p = init_printer()
+
+>>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 
 app.debug = True
 
 def get_data():
+<<<<<<< HEAD
 
     db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False).order_by(u'timestamp')
+=======
+    db = firestore.Client(credentials=credentials)
+    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False)
+>>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 
     try:
         docs = db_ref.get()
@@ -127,6 +138,7 @@ def delete_from_printque(message):
 @app.route("/")
 def new():
     return '''
+<<<<<<< HEAD
         <div style="padding: 5em; max-width: 75em">
         <h1 style="color: rgba(0,0,0,0.8); font-size: 10em; line-height: 0.66em">Sucessfully connected to the Print server!</h1>
         <h2>Part of the Richard Hotline project by Richard van 't Hof</h2>
@@ -138,6 +150,10 @@ def new():
             <li><a href="/getmessages">Continuous test print</a></li>
         </ul>
         </div>
+=======
+        <h3 style="line-height: 0.9em; font-size: 3rem">Sucessfully connected to the Print server!</h3>
+        <p>Part of the Richard Hotline project by Richard van 't Hof</p>
+>>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
     '''
 
 @app.route("/status")
@@ -145,6 +161,7 @@ def display_status():
     table = "no documents"
     get_data()
     table = """
+<<<<<<< HEAD
         <h1>Print Que</h1>
         <table style="width: 100%; text-align: left">
             <tr>
@@ -155,17 +172,32 @@ def display_status():
                 <th><h3>Timestamp</h3></th>
                 <th><h3>Message</h3></th>
 
+=======
+        <table style="width: 100%; text-align: left">
+            <tr>
+                <th>ID</th>
+                <th>From</th>
+                <th>Contact</th>
+                <th>Timestamp</th>
+                <th>Message</th>
+>>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
             </tr>
             """+get_rows(messages)+"""
         </table>
     """
     return table
 
+<<<<<<< HEAD
 
 
 def get_rows(posts):
     rows = []
     table = " "
+=======
+def get_rows(posts):
+    rows = []
+    table = ""
+>>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 
     for message in posts:
         rows.append("""
@@ -185,6 +217,7 @@ def get_rows(posts):
 
             )
         )
+<<<<<<< HEAD
     table = " ".join(rows)
     return(table)
 
@@ -217,6 +250,9 @@ def handle_incomming_messages():
 
 
 
+=======
+    return(" ".join(rows))
+>>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 
 @app.route("/api/print",  methods=['POST'])
 def post_messages():
@@ -227,6 +263,7 @@ def post_messages():
     return "Message sent", 200
 
 
+<<<<<<< HEAD
 @app.route("/reset")
 # Resets the 'printed' status of all messages to False; should only be used for debugging
 def reset_printstatus():
@@ -256,5 +293,7 @@ def reset_printstatus():
         return EnvironmentError
 
 
+=======
+>>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
