@@ -44,26 +44,16 @@ def init_printer():
         print("NO PRINTER DETECTED. Dummy printer is being used instead.")
         print("If this is an error: please check the USB-cable")
         return Dummy()
-<<<<<<< HEAD
 
 p = init_printer()
 db = firestore.Client(credentials=credentials)
-=======
 
-p = init_printer()
-
->>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 
 app.debug = True
 
 def get_data():
-<<<<<<< HEAD
 
     db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False).order_by(u'timestamp')
-=======
-    db = firestore.Client(credentials=credentials)
-    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False)
->>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 
     try:
         docs = db_ref.get()
@@ -138,22 +128,42 @@ def delete_from_printque(message):
 @app.route("/")
 def new():
     return '''
-<<<<<<< HEAD
+        <style>
+            ul {
+                diplay: inline;
+                padding: 1em 0;
+                margin: 0;
+
+            }
+            li, a {
+                display: inline;
+                padding: 1em;
+                color: black;
+                text-decoration: none;
+                border-radius: 100rem;
+            }
+            li {
+                margin-right: 0.5em;
+                transition: 0.1s ease;
+                background-color: gainsboro;
+            }
+
+            li:hover {
+                background-color: aquamarine;
+            }
+        </style>
         <div style="padding: 5em; max-width: 75em">
         <h1 style="color: rgba(0,0,0,0.8); font-size: 10em; line-height: 0.66em">Sucessfully connected to the Print server!</h1>
         <h2>Part of the Richard Hotline project by Richard van 't Hof</h2>
         <ul>
-            <li><a href="/settings">Settings</a></li>
+            <li><a href="/getmessages">Start Print Server</a></li>
+            <!--<li><a href="/settings">Settings</a></li>-->
             <li><a href="/status">View Print que</a></li>
             <li><a href="/reset">Reset 'printed' status</a></li>
             <li><a href="/api/getmessages">Test Print</a></li>
-            <li><a href="/getmessages">Continuous test print</a></li>
         </ul>
         </div>
-=======
-        <h3 style="line-height: 0.9em; font-size: 3rem">Sucessfully connected to the Print server!</h3>
-        <p>Part of the Richard Hotline project by Richard van 't Hof</p>
->>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
+
     '''
 
 @app.route("/status")
@@ -161,8 +171,7 @@ def display_status():
     table = "no documents"
     get_data()
     table = """
-<<<<<<< HEAD
-        <h1>Print Que</h1>
+        <h1 style="width: 95%; display: inline-block">Print Que</h1><a style="display: inline-block" href="/">[Back]</a>
         <table style="width: 100%; text-align: left">
             <tr>
 
@@ -172,32 +181,17 @@ def display_status():
                 <th><h3>Timestamp</h3></th>
                 <th><h3>Message</h3></th>
 
-=======
-        <table style="width: 100%; text-align: left">
-            <tr>
-                <th>ID</th>
-                <th>From</th>
-                <th>Contact</th>
-                <th>Timestamp</th>
-                <th>Message</th>
->>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
+
             </tr>
             """+get_rows(messages)+"""
         </table>
     """
     return table
 
-<<<<<<< HEAD
-
-
 def get_rows(posts):
     rows = []
     table = " "
-=======
-def get_rows(posts):
-    rows = []
-    table = ""
->>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
+
 
     for message in posts:
         rows.append("""
@@ -217,7 +211,6 @@ def get_rows(posts):
 
             )
         )
-<<<<<<< HEAD
     table = " ".join(rows)
     return(table)
 
@@ -250,9 +243,6 @@ def handle_incomming_messages():
 
 
 
-=======
-    return(" ".join(rows))
->>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
 
 @app.route("/api/print",  methods=['POST'])
 def post_messages():
@@ -262,38 +252,63 @@ def post_messages():
     print_message(content)
     return "Message sent", 200
 
-
-<<<<<<< HEAD
 @app.route("/reset")
 # Resets the 'printed' status of all messages to False; should only be used for debugging
 def reset_printstatus():
-    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', True)
+    # Get target location
+    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages')
+    # Place where all post can be temporarily stored locally
     allPosts = []
-    try:
-        docs = db_ref.get()
-        for doc in docs:
-            allPosts.append([doc.id, doc.to_dict()])
-    except google.cloud.exceptions.NotFound:
-        print 'No such document found'
-        return "failed"
 
-    try:
-        for post in allPosts:
-            doc_ref = db_ref.document(post[0])
-            doc_ref.update({
-                'printed': False
-            })
-        return """
-            <h1>Printed status reset</h1>
-            <p>The 'printed' status of all messages have been reset to 'False.'</p>
-            <a href="/status">[status]</a>
-            <a href="/getmessages">[test printer]</a>
-        """
-    except:
-        return EnvironmentError
+    def get_messages():
+        try:
+            # Get all posts
+            docs = db_ref.get()
+            for doc in docs:
+                #Add post name (ID) and contents to allPosts
+                allPosts.append([doc.id, doc.to_dict()])
+            return True
+        except:
+            print 'No such document found'
+            return False
 
 
-=======
->>>>>>> 1e073a46205c424684d388139dc12f30b3d057ee
+    def update_messages():
+
+        print("updating started")
+        try:
+            for post in allPosts:
+                print("updating "+ str(post[0]))
+                doc_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').document(str(post[0]))
+                doc_ref.update({
+                    'printed': False
+                })
+            return True
+        except:
+            return False
+
+    success_prompt = '''
+        <h1>Message reset Successful</h1>
+        <p>Message states for all messages has been reset to 'False'.
+        These messages can now be reused for printer testing</p>
+        <a href="/">[Back]</a>
+        <a href="/status">[Print Que]</a>
+        <a href="/getmessages">[Start Print Server]</a>
+    '''
+
+    if(get_messages()):
+        if(update_messages()):
+            return success_prompt
+        else:
+            return "Updating failed"
+    else:
+        return "Getting messages failed"
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
