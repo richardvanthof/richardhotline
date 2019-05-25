@@ -100,10 +100,13 @@ class Form extends React.Component {
         this.maxLength = 150;
     }
 
+
     maxLength = {
         textField: 500,
         textArea: 50
     }
+
+master
     componentDidMount(){
         this.setState(state => ({
             date: new Date()
@@ -181,8 +184,10 @@ class Form extends React.Component {
                 solution: "Please, fill in all fields"
             }
         }
+
         // Checks if input has no more charakters than specified in this.maxLength
         if(data.name.length > this.maxLength.textField || data.contact.length > this.maxLength.textField || data.message.length > this.maxLength.textArea){
+
             return {
                 valid: false,
                 error: "Message too long",
@@ -196,6 +201,7 @@ class Form extends React.Component {
         }
     }
 
+
     submit = (post) =>{
         // Link firebase
         const db = firebase.firestore();
@@ -208,6 +214,7 @@ class Form extends React.Component {
         }).catch((error) => {
             console.error("Error adding document: ", error);
             return false;
+
         });
     }
 
@@ -218,6 +225,7 @@ class Form extends React.Component {
             // valid: data is submitted
             // BUG: this.submit(this.state) does not return result;
             // Thus, submit.done is undefined.
+
             let post = {
                 name: this.state.name,
                 contact: this.state.contact,
@@ -229,6 +237,7 @@ class Form extends React.Component {
             console.log(submit);
             // Check if message is posted sucessfully
             if(submit){
+
                 // Valid: Success Pop Up will appear
                 this.setState(state => ({
                     status: 'done'
@@ -236,9 +245,11 @@ class Form extends React.Component {
                 console.log("saving done");
             } else {
                 // Not Valid: Notification with error will appear
+
                 this.setState(state => ({
                     status: 'failed'
                 }));
+
                 console.log("saving failed");
             }
 
