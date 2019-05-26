@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Button from '../components/Button';
 import Notification from '../components/Notification';
 import PopUp from '../components/PopUp';
+import Embed from '../components/Embed';
 import firebase from '../utils/firebase';
 
 const FormInput = styled.input`
@@ -11,6 +12,7 @@ const FormInput = styled.input`
     width:100%;
     margin-bottom: 1em;
     border: black 0.15rem solid;
+    color: ${props => props.error ? "red" : "black"};
 `
 
 const FormTextArea = styled.textarea`
@@ -85,7 +87,7 @@ class Form extends React.Component {
         this.state = {
             isActive: false,
             notifications: [],
-            status: '',
+            progress: '',
             name: '',
             contact: '',
             message: '',
@@ -99,7 +101,10 @@ class Form extends React.Component {
         this.maxLength = 150;
     }
 
-
+    maxLength = {
+        textField: 500,
+        textArea: 50
+    }
     componentDidMount(){
         this.setState(state => ({
             date: new Date()
@@ -108,12 +113,22 @@ class Form extends React.Component {
 
     componentWillUnmount() {
         this.clearNotifications();
+        this.setState(state => ({
+            progress: '',
+            name: '',
+            contact: '',
+            message: '',
+            date: ''
+        }));
     }
 
     toggleDisplay = () =>{
         this.setState(state => ({
             isActive: !state.isActive
         }));
+        if(this.state.isActive === false) {
+            this.componentWillUnmount()
+        }
     }
 
     getNotifications() {
@@ -143,19 +158,34 @@ class Form extends React.Component {
     }
 
     getPopUp = () => {
-        const status = this.state;
-        if( status === 'done'){
-            return (
-                <popUp title="Success!" description="Your message has been saved. But the printing service still has to be made :/">
-                </popUp>
-            )
-        } else if (status === 'failed') {
-            return (
-                <popUp title="Something went wrong">
-                </popUp>
-            )
-        } else {
-            return null
+        const progress = this.state.progress;
+        console.log(progress)
+        switch (progress) {
+            case 'loading':
+                return (
+                    <PopUp title="loading..."></PopUp>
+                )
+            case 'failed':
+                return (
+                    <PopUp title="Something went wrong"></PopUp>
+                )
+            case 'success':
+                return (
+                    <PopUp
+                        title="Success!"
+                    >
+
+                    </PopUp>
+                )
+            case 'finished':
+                return (
+                    <PopUp title="Your message is being printed" onClick={this.toggleDisplay}>
+                        <Embed src="https://player.twitch.tv/?channel=bobross"/>
+                        <p>Your work here is done! Now let's watch some Bob Ross</p>
+                    </PopUp>
+                )
+            default:
+                return null
         }
     }
 
@@ -164,26 +194,31 @@ class Form extends React.Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-
         this.setState({
         [name]: value
         });
     }
 
     isValid = (data) => {
-        if(data.name.length <= 0 || data.contact.length <= 0 || data.message.length <= 0){
-            return {
-                valid: false,
-                error: "All fields are required",
-                solution: "Please, fill in all fields"
+        try {
+            if(data.name.length <= 0 || data.contact.length <= 0 || data.message.length <= 0){
+                throw new EvalError ({
+                    valid: false,
+                    error: "All fields are required",
+                    solution: "Please, fill in all fields"
+                })
             }
-        }
-        if(data.name.length > 50 || data.contact.length > 50 || data.message.length > 300){
-            return {
-                valid: false,
-                error: "Message too long",
-                solution: "Make your message shorter"
+            // Checks if input has no more charakters than specified in this.maxLength
+            if(data.name.length > this.maxLength.textField || data.contact.length > this.maxLength.textField || data.message.length > this.maxLength.textArea){
+                throw new EvalError({
+                    valid: false,
+                    error: "Message too long",
+                    solution: "Make your message shorter"
+                })
             }
+        } catch(e) {
+            console.log(e)
+            return e
         }
         return {
             valid: true,
@@ -195,25 +230,28 @@ class Form extends React.Component {
     submit = (post) =>{
         // Link firebase
         const db = firebase.firestore();
-        // Fill in user the message is meant for (TODO: move to config file)
         const USER = "Richard";
-        // BUG: functino returns with undefined.
-        db.collection("Users").doc(USER).collection("Messages").add(post).then((docRef) => {
-            console.log("Message saved with ID: ", docRef.id);
-            return true;
-        }).catch((error) => {
-            console.error("Error adding document: ", error);
-            return false;
-        });
+
+        return new Promise((resolve, reject) => {
+
+            db.collection("Users").doc(USER).collection("Messages").add(post)
+            .then((docRef)=>{
+                console.log("Message saved with ID: ", docRef.id);
+                resolve()
+            })
+            .catch((e)=>{
+                reject(e)
+            })
+        })
     }
 
     handleSubmit = () => {
         // Check if input (which is saved in state) is valid.
+
         let validation = this.isValid(this.state);
         if(validation.valid){
             // valid: data is submitted
-            // BUG: this.submit(this.state) does not return result;
-            // Thus, submit.done is undefined.
+            // Get data in right data structure for posting
             let post = {
                 name: this.state.name,
                 contact: this.state.contact,
@@ -221,22 +259,30 @@ class Form extends React.Component {
                 timestamp: this.state.date,
                 printed: false
             }
-            const submit = this.submit(post);
-            console.log(submit);
-            // Check if message is posted sucessfully
-            if(submit){
-                // Valid: Success Pop Up will appear
+            console.log("Post validated!")
+            this.setState(state => ({
+                progress: 'loading'
+            }))
+            //submit post
+            this.submit(post)
+            .then(()=> {
+                console.log("success")
                 this.setState(state => ({
-                    status: 'done'
-                }));
-                console.log("saving done");
-            } else {
-                // Not Valid: Notification with error will appear
+                    progress: 'success'
+                }))
+            })
+            .then(()=> {
+                setTimeout(()=>{
+                    this.setState(state => ({
+                        progress: 'finished'
+                    }))
+                }, 2000)
+            })
+            .catch((err) => {
                 this.setState(state => ({
-                    status: 'failed'
-                }));
-                console.log("saving failed");
-            }
+                    progress: 'failed'
+                }))
+            })
 
         } else {
             // not valid: notification (type: error) will appear on top of the screen with the reason.

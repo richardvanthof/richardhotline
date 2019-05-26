@@ -167,7 +167,7 @@ def new():
             }
             li {
                 margin-right: 0.5em;
-                transition: 0.2s ease;
+                transition: 0.05s ease;
                 background-color: rgba(0,0,0,0.05);
                 box-shadow: 0em 0em rgba(0,0,0,0);
             }
@@ -176,10 +176,13 @@ def new():
                 background-color: aquamarine;
                 box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.05);
             }
+            h2 {
+                margin-left: 0.35em
+            }
         </style>
         <div style="padding: 5em; max-width: 75em">
         <h1 style="color: rgba(0,0,0,0.8); font-size: 10em; line-height: 0.66em">Sucessfully connected to the Print server!</h1>
-        <h2>Part of the Richard Hotline project by Richard van 't Hof</h2>
+        <h2>What would you like to do?</h2>
         <ul>
             <li><a href="/getmessages">Start Print Server</a></li>
             <!--<li><a href="/settings">Settings</a></li>-->
@@ -233,7 +236,6 @@ def get_rows(posts):
                 message[1].get('contact'),
                 message[1].get('timestamp'),
                 message[1].get('message')
-
             )
         )
     table = " ".join(rows)
