@@ -140,7 +140,7 @@ class App extends React.Component {
                     >
                         <h3>Known errors</h3>
                         <ul>
-                            <li>Messages currently are nog printed automaticially. This means that messages will not be delivered in realtime</li>
+                            <li>Messages currently are not printed automaticially yet. This means that messages will not yet be delivered in realtime. Thet will be saved, though.</li>
                         </ul>
                     </PopUp>
                 </ErrorBoundary>

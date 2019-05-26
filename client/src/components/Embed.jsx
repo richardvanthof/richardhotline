@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import fetch from 'node-fetch';
 
 const height = '25rem'
 
@@ -11,7 +12,6 @@ const Placeholder = styled.div`
     position: relative;
     left: 0;
     top: 0;
-
 `
 
 const EmbedWrapper = styled.div`
@@ -25,26 +25,44 @@ const EmbedWrapper = styled.div`
         width: 100%;
         height: 100%;
         min-height: ${height};
+        animation: 1s fadeIn ease-in-out;
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
     }
 `
 
 const Embed = (props) => {
-    const loadIframe = () => {
-        return (
-            <Placeholder>
 
-            </Placeholder>
+    let loaded = false;
+    const content = async (url) => {
+        console.log("fetching video: "+url)
+        let source = await fetch(url);
+        loaded = true;
+        console.log(source);
+        return source
+    }
+    if(loaded) {
+        return (
+            <EmbedWrapper>
+                <iframe title="video" src={content(props.src)}/>
+            </EmbedWrapper>
+        )
+    } else {
+        return (
+            <EmbedWrapper>
+                <iframe title="video" src={props.src}/>
+            </EmbedWrapper>
+
         )
     }
-
-    return (
-        // <EmbedWrapper src={props.src}/>
-        <EmbedWrapper>
-            {loadIframe(props.src)}
-        </EmbedWrapper>
-    )
 }
 
 export default Embed;
 
-{/* <iframe src={props.src} /> */}
+{/*  */}
