@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Button from '../components/Button';
 import Notification from '../components/Notification';
 import PopUp from '../components/PopUp';
+import Embed from '../components/Embed';
+import WordCount from '../components/WordCount';
 import firebase from '../utils/firebase';
 
 const FormInput = styled.input`
@@ -11,6 +13,7 @@ const FormInput = styled.input`
     width:100%;
     margin-bottom: 1em;
     border: black 0.15rem solid;
+    color: ${props => props.error ? "red" : "black"};
 `
 
 const FormTextArea = styled.textarea`
@@ -55,7 +58,8 @@ const FormWrapper = styled.section`
     position: absolute;
     top: 0;
     left: 0;
-    animation: fadeIn 0.35s ;
+    transition: 1s ease-in-out;
+    animation: fadeIn 0.35s;
     @keyframes fadeIn {
         0%{
             opacity: 0;
@@ -77,6 +81,12 @@ const Cross = styled.a`
         content: "x";
     }
 `
+const CounterBase = styled.p`
+    display: flex;
+    justify-content: space-between;
+    color: red;
+`
+
 
 class Form extends React.Component {
     constructor(props){
@@ -85,7 +95,8 @@ class Form extends React.Component {
         this.state = {
             isActive: false,
             notifications: [],
-            status: '',
+            popups: [],
+            progress: 'finished',
             name: '',
             contact: '',
             message: '',
@@ -100,19 +111,11 @@ class Form extends React.Component {
     }
 
 
-    componentDidMount(){
-        this.setState(state => ({
-            date: new Date()
-        }))
-    }
-
-    componentWillUnmount() {
-        this.clearNotifications();
-    }
 
     toggleDisplay = () =>{
         this.setState(state => ({
-            isActive: !state.isActive
+            isActive: !state.isActive,
+            progress: ' '
         }));
     }
 
@@ -129,11 +132,12 @@ class Form extends React.Component {
 
     addNotification(type, message) {
         const { notifications } = this.state;
+
         notifications.push({
             type,
             message
         });
-
+        console.log(notifications)
         this.setState({ notifications });
         console.debug(this.state.notifications)
     }
@@ -143,20 +147,55 @@ class Form extends React.Component {
     }
 
     getPopUp = () => {
-        const status = this.state;
-        if( status === 'done'){
-            return (
-                <popUp title="Success!" description="Your message has been saved. But the printing service still has to be made :/">
-                </popUp>
-            )
-        } else if (status === 'loading') {
-            return (
-                <popUp title="Loading...">
-                </popUp>
-            )
-        } else {
-            return null
+        const progress = this.state.progress;
+        console.log(progress)
+        switch (progress) {
+            case 'loading':
+                return (
+                    <PopUp
+                        noButton
+                        title="Sending your message..."
+                    ></PopUp>
+                )
+
+            case 'success':
+                return (
+                    <PopUp
+                        noButton
+                        title="Success!"
+                    >
+
+                    </PopUp>
+                )
+            case 'finished':
+                return (
+                    <PopUp
+                        title="Your message is being printed"
+                    >
+                        <Embed src="https://player.twitch.tv/?channel=bobross"/>
+                        <p>Your work here is done. We are going to deliver your
+                            message as soon as possible. For in the meantime,
+                            let's watch some Bob Ross</p>
+                    </PopUp>
+                )
+            default:
+                return null
         }
+    }
+
+    addPopUp(type, message) {
+        const { popups } = this.state;
+        popups.push({
+            type,
+            message
+        });
+
+        this.setState({ popups });
+        console.debug(this.state.popups)
+    }
+
+    clearPopUps() {
+        this.setState({ popups: [] });
     }
 
 
@@ -164,88 +203,127 @@ class Form extends React.Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-
         this.setState({
-        [name]: value
+            [name]: value,
+            progress: ' '
         });
     }
 
     isValid = (data) => {
-        if(data.name.length <= 0 || data.contact.length <= 0 || data.message.length <= 0){
-            return {
-                valid: false,
-                error: "All fields are required",
-                solution: "Please, fill in all fields"
+        return new Promise((resolve, reject)=>{
+            try {
+                // Verifies if input is filled in
+                if(data.name.length <= 0 || data.contact.length <= 0
+                    || data.message.length <= 0){
+                    throw new EvalError ("Please, fill in all the fields")
+                }
+                if( data.name.length > this.props.maxTextFieldLength ||
+                    data.contact.length > this.props.maxTextFieldLength){
+                        throw new EvalError("No name, email or phone number should be that long! Make them shorter, you hacker :)")
+                    }
+                // Checks if input has no more charakters than specified in this.maxLength
+                if( data.message.length > this.props.maxTextAreaLength){
+                    throw new EvalError("Please, make your message shorter")
+                }
+            } catch(e) {
+                console.log(e)
+                reject(e)
             }
-        }
-        if(data.name.length > 50 || data.contact.length > 50 || data.message.length > 300){
-            return {
-                valid: false,
-                error: "Message too long",
-                solution: "Please, fill in all fields"
-            }
-        }
-        return {
-            valid: true,
-            error: null,
-            solution: null
-        }
+            resolve()
+        })
     }
 
-    submit =() =>{
+    submit = (post) => {
         // Link firebase
         const db = firebase.firestore();
-        // Fill in user the message is meant for
         const USER = "Richard";
-        // Retreive message inforamtion
-        const {name, contact, message, date} = this.state;
-        // BUG: functino returns with undefined.
-        db.collection("Users").doc(USER).collection("Messages").add({
-            name: name,
-            contact: contact,
-            message: message,
-            timestamp: date
-        }).then((docRef) => {
-            console.log("Message saved with ID: ", docRef.id);
-            return {
-                done: true,
-                info: docRef
-            }
-        }).catch((error) => {
-            console.error("Error adding document: ", error);
-            return {
-                done: false,
-                info: error
-            };
-        });
+
+        return new Promise((resolve, reject) => {
+
+            db.collection("Users").doc(USER).collection("Messages").add(post)
+            .then((docRef)=>{
+                console.log("Message saved with ID: ", docRef.id);
+                resolve()
+            })
+            .catch((e)=>{
+                reject(e)
+            })
+        })
     }
 
-    handleSubmit = () => {
-        // Check if input (which is saved in state) is valid.
-        let validation = this.isValid(this.state);
-        if(validation.valid){
-            // valid: data is submitted
-            // BUG: this.submit(this.state) does not return result;
-            // Thus, submit.done is undefined.
-            let submit = this.submit(this.state);
-            console.log(submit);
-            // Check if message is posted sucessfully
-            if(submit.done){
-                // Valid: Success Pop Up will appear
-                this.setState(state => ({
-                    status: 'done'
-                }));
-                console.log("saving done");
-            } else {
-                // Not Valid: Notification with error will appear
-                this.addNotification('error', submit.info);
-                console.log("saving failed");
+
+
+    handleSubmit = async () => {
+        const displayLoadScreen = () => {
+            this.setState(state => ({
+                progress: 'loading'
+            }))
+        }
+
+        const initSubmit = () => {
+            let post = {
+                name: this.state.name,
+                contact: this.state.contact,
+                message: this.state.message,
+                timestamp: this.state.date,
+                printed: false
             }
 
-        } else {
-            // not valid: notification (type: error) will appear on top of the screen with the reason.
-            this.addNotification('error', validation.solution);
+            // Submit post to server (asynchronous)
+            this.submit(post)
+            .then(()=> {
+                console.log("success")
+                this.setState(state => ({
+                    progress: 'success'
+                }))
+            })
+            .then(()=> {
+                setTimeout(()=>{
+                    this.setState(state => ({
+                        progress: 'finished',
+                        name: '',
+                        contact: '',
+                        message: '',
+                        date: '',
+                        notifications: []
+                    }))
+                }, 1000)
+            })
+            .catch((err) => {
+                this.setState(state => ({
+                    progress: 'failed'
+                }))
+            })
         }
+
+        // Validate data, then submission is initialised
+        await this.isValid(this.state)
+        .then(()=>{
+            console.log("Input validated");
+            displayLoadScreen();
+            initSubmit();
+        }).catch((err)=>{
+            console.log(err.message)
+            this.addNotification('error', err.message)
+        })
+    }
+
+    componentDidMount(){
+        this.setState(state => ({
+            date: new Date()
+        }))
+    }
+
+    componentWillUnmount() {
+        this.clearNotifications();
+        this.clearPopUps();
+        this.setState(state => ({
+            progress: '',
+            name: '',
+            contact: '',
+            message: '',
+            date: ''
+        }));
     }
 
     render(){
@@ -261,12 +339,14 @@ class Form extends React.Component {
                             </FormHeader>
                             <FormInput
                                 name="name"
+                                maxLength={this.props.maxTextFieldLength}
                                 value={this.state.name}
                                 onChange={this.handleInputChange}
                                 placeholder="Your name"
                             />
                             <FormInput
                                 name="contact"
+                                maxLength={this.props.maxTextFieldLength}
                                 value={this.state.contact}
                                 onChange={this.handleInputChange}
                                 placeholder="Email / Phone"
@@ -276,10 +356,10 @@ class Form extends React.Component {
                                 value={this.state.message}
                                 onChange={this.handleInputChange}
                                 placeholder="Your message..."
-                                maxlength={this.maxLength}
                             />
                             <div>
                             <Button onClick={this.handleSubmit} href="#" title="Send"/>
+                            <WordCount amount={this.state.message.length} max={this.props.maxTextAreaLength}/>
                             </div>
 
                         </FormBase>

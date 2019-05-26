@@ -20,7 +20,7 @@ class ErrorBoundary extends React.Component {
       if (this.state.errorInfo) {
         // Error path
         return (
-            <PopUp title="Something went wrong" description="Unfortunantly, an error occured.">
+            <PopUp onClick={this.props.onClick} title="Something went wrong" description="Unfortunantly, an error occured.">
                 <details style={{ whiteSpace: 'pre-wrap' }}>
                 {this.state.error && this.state.error.toString()}
                 <br />
