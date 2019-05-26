@@ -109,6 +109,7 @@ class App extends React.Component {
         return (
             <Body className="App">
                 <ErrorBoundary>
+
                     <main>
                         <Start>
                             <Content>
@@ -122,9 +123,26 @@ class App extends React.Component {
                                 <Button onClick={this.handleClick} title="Let's start"/>
                             </Content>
                         </Start>
-                        <Form ref={this.composeWindow} display={this.state.displayComposeWindow} />
+                        <Form
+                            ref={this.composeWindow}
+                            display={this.state.displayComposeWindow}
+                            maxTextFieldLength={50}
+                            maxTextAreaLength={400}
+                        />
                     </main>
                     <Footer />
+                    <PopUp
+
+                        title="Nobody is perfect, and especially not this app"
+                        description="Thank you for testing the Richard Hotline.
+                        Please take note that this program is still in development.
+                        This means that some bugs might occur"
+                    >
+                        <h3>Known errors</h3>
+                        <ul>
+                            <li>Messages currently are nog printed automaticially. This means that messages will not be delivered in realtime</li>
+                        </ul>
+                    </PopUp>
                 </ErrorBoundary>
             </Body>
         )

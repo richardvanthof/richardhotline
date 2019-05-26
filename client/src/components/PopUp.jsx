@@ -9,13 +9,16 @@ const AlertBase = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: aliceblue;
+    background: aqua;
     padding: 1em;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     animation: fadeIn 1s ease-in-out;
+    details {
+        margin: 1em 0 2em 0;
+    }
     @keyframes fedeIn {
         0% {
             transform: translateX(-2em);
@@ -29,7 +32,7 @@ const AlertBase = styled.div`
 `
 
 const AlertContent = styled.div`
-    max-width: 30rem;
+    max-width: 40rem;
     width: 100%;
     padding: 1em;
 `
@@ -56,7 +59,7 @@ class PopUp extends React.Component {
                     <AlertBase>
                         <AlertContent>
                             <h1>{this.props.title}</h1>
-                            {this.props.children}
+
                             <p>
                                 {this.props.description}
                                 {
@@ -64,13 +67,14 @@ class PopUp extends React.Component {
                                     <small>Code {this.props.code}</small>
                                 }
                             </p>
+                            {this.props.children}
                             {
                                 !this.props.noButton &&
                                 <Button
-                                    onClick={this.toggleDisplay}
-                                    title={
-                                        this.props.button ? this.props.button : "Ok"
+                                    onClick={
+                                        this.props.onClick ? this.props.onClick : this.toggleDisplay
                                     }
+                                    title={this.props.button ? this.props.button : "Ok"}
                                 />
                             }
                         </AlertContent>
