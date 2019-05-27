@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import sanitizeHtml from 'sanitize-html';
 
 import Button from '../components/Button';
 import Notification from '../components/Notification';
@@ -219,7 +220,7 @@ class Form extends React.Component {
                 }
                 if( data.name.length > this.props.maxTextFieldLength ||
                     data.contact.length > this.props.maxTextFieldLength){
-                        throw new EvalError("No name, email or phone number should be that long! Make them shorter, you hacker :)")
+                    throw new EvalError("No name, email or phone number should be that long! Make them shorter, you hacker :)")
                     }
                 // Checks if input has no more charakters than specified in this.maxLength
                 if( data.message.length > this.props.maxTextAreaLength){
@@ -262,9 +263,9 @@ class Form extends React.Component {
 
         const initSubmit = () => {
             let post = {
-                name: this.state.name,
-                contact: this.state.contact,
-                message: this.state.message,
+                name: sanitizeHtml(this.state.name),
+                contact: sanitizeHtml(this.state.contact),
+                message: sanitizeHtml(this.state.message),
                 timestamp: this.state.date,
                 printed: false
             }
