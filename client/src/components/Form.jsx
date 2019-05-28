@@ -97,7 +97,7 @@ class Form extends React.Component {
             isActive: false,
             notifications: [],
             popups: [],
-            progress: 'finished',
+            progress: '',
             name: '',
             contact: '',
             message: '',
@@ -147,7 +147,7 @@ class Form extends React.Component {
         this.setState({ notifications: [] });
     }
 
-    getPopUp = () => {
+    getPopUp = (m) => {
         const progress = this.state.progress;
         console.log(progress)
         switch (progress) {
@@ -173,7 +173,7 @@ class Form extends React.Component {
                     <PopUp
                         title="Your message is being printed"
                     >
-                        <Embed src="https://player.twitch.tv/?channel=bobross"/>
+                        <Embed src="https://www.youtube.com/embed/K7Hn1rPQouU" allowfullscreen/>
                         <p>Your work here is done. We are going to deliver your
                             message as soon as possible. For in the meantime,
                             let's watch some Bob Ross</p>
@@ -294,6 +294,9 @@ class Form extends React.Component {
                 this.setState(state => ({
                     progress: 'failed'
                 }))
+                console.log(err);
+                this.addNotification('error', err.message)
+
             })
         }
 
