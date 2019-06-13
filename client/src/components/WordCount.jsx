@@ -13,7 +13,7 @@ const CounterBase = styled.p`
 const WordCount = (props) => {
     let counter = props.max - props.amount
     return (
-        <CounterBase inputColor={ counter < 0 ? "palevioletred" : "black"}>
+            <CounterBase inputColor={ counter < 0 ? "palevioletred" : "black"}>
             <small>
                 {counter}
             </small>

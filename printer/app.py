@@ -75,20 +75,19 @@ def print_message(data):
     # body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)
     try:
         p.text("""
+IMPORTANT MESSAGE:
+%s
 
-        IMPORTANT MESSAGE:
-        %s
+By: %s
 
-        By: %s
-
-        %s
+%s
 
 
-        Contact:
-        %s
+Contact:
+%s
 
-        _______________________________
-        ===============================
+ _______________________________
+===============================
         """% (timestamp, name, message, contact))
         return True
     except:
@@ -167,7 +166,7 @@ def new():
             }
             li {
                 margin-right: 0.5em;
-                transition: 0.05s ease;
+                transition: 0.3s ease;
                 background-color: rgba(0,0,0,0.05);
                 box-shadow: 0em 0em rgba(0,0,0,0);
             }
@@ -206,8 +205,8 @@ def display_status():
                 <th><h3>ID</h3></th>
                 <th><h3>From</h3></th>
                 <th><h3>Contact</h3></th>
-                <th><h3>Timestamp</h3></th>
                 <th><h3>Message</h3></th>
+                <th><h3>Timestamp</h3></th>
 
 
             </tr>
@@ -234,8 +233,8 @@ def get_rows(posts):
                 message[0],
                 message[1].get('name'),
                 message[1].get('contact'),
-                message[1].get('timestamp'),
-                message[1].get('message')
+                message[1].get('message'),
+                message[1].get('timestamp')
             )
         )
     table = " ".join(rows)
@@ -265,9 +264,6 @@ def settings():
 def handle():
     if(handle_incomming_messages()):
         return 'done'
-
-
-
 
 @app.route("/api/print",  methods=['POST'])
 def post_messages():
