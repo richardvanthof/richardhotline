@@ -3,6 +3,7 @@
 # Import dependencies web server
 from flask import Flask, render_template, request, jsonify, make_response, abort
 import datetime, sched, time, threading
+import asyncio
 
 # Import dependencies receipt printer
 from escpos.printer import Usb, Dummy
@@ -20,57 +21,69 @@ scoped_credentials = credentials.with_scopes(['https://www.googleapis.com/auth/c
 credential_path = key
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
+db = firestore.Client(credentials=credentials)
 
-# If no other instances of firebase are running, Firebase gets initialised.
-# Here the authenticaton object (cred) is also applied (don't forget to add this before runnning this program)
-# db = ""
-# app = ""
+isActive = True
 
-# if not len(firebase_admin._apps):
-#   cred = credentials.Certificate("./utils/serviceAccountKey.json")
-#   app = firebase_admin.initialize_app(cred)
-#   db = firestore.Client(credentials=cred)
-
-
+# Store to be printed messages here
 messages = []
-
 
 app = Flask(__name__)
 
-def init_printer():
+def detectPrinter():
+    # Checks if USB Printer is available. If not, the dummy printer is used.
     try:
-        return Usb(0x0416, 0x5011)
+        p = Usb(0x0416, 0x5011)
+        print("👍   Printer Detected")
+        return p
     except:
-        print("NO PRINTER DETECTED. Dummy printer is being used instead.")
-        print("If this is an error: please check the USB-cable")
-        return Dummy()
+        print("⚠️   NO PRINTER DETECTED. Skipping message...")
+        print("     Please check the USB-cable")
+        return False
 
-p = init_printer()
-db = firestore.Client(credentials=credentials)
-
-app.debug = True
-
-def get_data():
-    # Deletes all messages in memory and downloads newst batch from server
+def getData():
+    print('Fetching...')
     del messages[:]
     db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False).order_by(u'timestamp')
-
+    # print(messages)
     try:
-        docs = db_ref.get()
-        for doc in docs:
-            messages.append([doc.id, doc.to_dict()])
-        print messages
-        return True
+            docs = db_ref.get()
+            for doc in docs:
+                messages.append([doc.id, doc.to_dict()])
+            # print("Print que: " + str(messages))
+
     except google.cloud.exceptions.NotFound:
-        print 'No such document found'
-        return "failed"
+            print('No such document found in the Database')
 
-def print_message(data):
+def update_firebase_message(messageID):
+    print("☑️   Updating print status" + messageID)
+    try:
+        doc_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').document(messageID)
+        doc_ref.update({
+            'printed': True
+        })
+        return True
+    except:
+        return "Google Cloud could not be reached"
 
+def delete_from_printque(message):
+    try:
+
+        messageIndex = messages.index(message)
+        messages.remove(messages[messageIndex])
+        print("🗑   Deleted %s from print que"%(message[0]))
+        return True
+    except(Exception):
+        print(env)
+        return False
+
+async def printMessage(data, device):
+    p = device
     timestamp = str(data.get('date'))
     name = str(data.get('name'))
     contact = str(data.get('contact'))
     message = str(data.get('''message'''))
+    print("🖨   Printing message from %s"%(name))
 
     # body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)
     try:
@@ -93,38 +106,60 @@ Contact:
     except:
         return False
 
-def mark_message_as_done(message):
-    messageID = message[0]
-    messageContent = message[1]
-    print("Marking message "+str(messageID)+" as done and deleting it from print que")
-    if(update_firebase_message(messageID)):
-        if(delete_from_printque(message)):
-            return True
-        else:
-            return "Removing message from print que failed"
-    else:
-        print("Updating Firebase Failed")
-        return "Updating Firebase Failed"
 
-def update_firebase_message(messageID):
-    try:
-        doc_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').document(messageID)
-        doc_ref.update({
-            'printed': True
-        })
-        return True
-    except:
-        return "Google Cloud could not be reached"
 
-def delete_from_printque(message):
-    try:
-        message_index = messages.index(message)
-        messages.remove(messages[message_index])
-        print("Message removed");
-        return True
-    except:
-        print("Removing message from print que failed")
-        return False
+async def main():
+    while isActive:
+        mssgCounter = len(messages)
+        while(mssgCounter <= 0):
+            getData()
+            mssgCounter = len(messages)
+            await asyncio.sleep(5)
+
+        for message in messages:
+            mssgId = message[0]
+            mssgContent = message[1]
+            printer = detectPrinter()
+            await printMessage(mssgContent, printer)
+            update_firebase_message(mssgId)
+            delete_from_printque(message)
+            mssgCounter = len(messages)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+loop = asyncio.get_event_loop()
+try:
+    asyncio.ensure_future(main())
+    loop.run_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    print("Closing Loop")
+    loop.close()
+
+
+
+
+
+app.debug = True
+
+
+
+
+
+
 
 
 
@@ -149,70 +184,35 @@ def init():
 
 @app.route("/")
 def new():
-    return '''
-        <style>
-            ul {
-                diplay: inline;
-                padding: 1em 0;
-                margin: 0;
+    return render_template('start.html')
 
-            }
-            li, a {
-                display: inline;
-                padding: 1em;
-                color: black;
-                text-decoration: none;
-                border-radius: 100rem;
-            }
-            li {
-                margin-right: 0.5em;
-                transition: 0.3s ease;
-                background-color: rgba(0,0,0,0.05);
-                box-shadow: 0em 0em rgba(0,0,0,0);
-            }
-
-            li:hover {
-                background-color: aquamarine;
-                box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.05);
-            }
-            h2 {
-                margin-left: 0.35em
-            }
-        </style>
-        <div style="padding: 5em; max-width: 75em">
-        <h1 style="color: rgba(0,0,0,0.8); font-size: 10em; line-height: 0.66em">Sucessfully connected to the Print server!</h1>
-        <h2>What would you like to do?</h2>
-        <ul>
-            <li><a href="/getmessages">Start Print Server</a></li>
-            <!--<li><a href="/settings">Settings</a></li>-->
-            <li><a href="/status">View Print que</a></li>
-            <li><a href="/reset">Reset 'printed' status</a></li>
-            <li><a href="/api/getmessages">Test Print</a></li>
-        </ul>
-        </div>
-
-    '''
+@app.route("/settings")
+def settings():
+    return render_template('settings.html')
 
 @app.route("/status")
 def display_status():
-    table = "no documents"
-    get_data()
-    table = """
-        <h1 style="width: 95%; display: inline-block">Print Que</h1><a style="display: inline-block" href="/">[Back]</a>
-        <table style="width: 100%; text-align: left">
-            <tr>
+    table=""
+    if(get_data()):
+        table = """
+            <h1 style="width: 95%; display: inline-block">Print Que</h1><a style="display: inline-block" href="/">[Back]</a>
+            <table style="width: 100%; text-align: left">
+                <tr>
 
-                <th><h3>ID</h3></th>
-                <th><h3>From</h3></th>
-                <th><h3>Contact</h3></th>
-                <th><h3>Message</h3></th>
-                <th><h3>Timestamp</h3></th>
+                    <th><h3>ID</h3></th>
+                    <th><h3>From</h3></th>
+                    <th><h3>Contact</h3></th>
+                    <th><h3>Message</h3></th>
+                    <th><h3>Timestamp</h3></th>
 
 
-            </tr>
-            """+get_rows(messages)+"""
-        </table>
-    """
+                </tr>
+                """+get_rows(messages)+"""
+            </table>
+        """
+    else:
+        table = "Not found"
+
     return table
 
 def get_rows(posts):
@@ -241,29 +241,40 @@ def get_rows(posts):
     return(table)
 
 @app.route("/getmessages")
-def handle_incomming_messages():
-    get_data()
-    p = init_printer()
-    while(messages <= 0):
-        handle_incomming_messages()
-
-    if(messages > 0):
+async def handle_incomming_messages():
+    #Check for unprinted messages
+    get_data();
+    message_count = len(messages)
+        # Prints unprinted messages
+    if(message_count > 0):
         for message in messages:
-            if(print_message(message[1])):
+            try:
+                print_message(message[1])
                 mark_message_as_done(message)
-            else:
-                print("Error, message "+str(message[0])+" can't be printed. Printer seems unreachable. Please check cable.")
-                return handle_incomming_messages()
-    return "printing"
+            except:
+                e = sys.exc_info()[0]
+                raise
+            finally:
+                handle_incomming_messages();
+                return "printing %s messages"%(message_count)
+    else:
+        print("Currently no messages. Checking again in 30s")
+        await asyncio.sleep(30)
+        handle_incomming_messages()
+        return("no messages found. refetching...")
 
-@app.route("/settings")
-def settings():
-    return "Feature not yet available"
 
-@app.route("/getmessages")
-def handle():
-    if(handle_incomming_messages()):
-        return 'done'
+    # while(messages <= 0):
+    #     handle_incomming_messages()
+
+    # if(messages.length >= 0):
+    #     for message in messages:
+    #         if(print_message(message[1])):
+    #             mark_message_as_done(message)
+    #         else:
+    #             print("Error, message "+str(message[0])+" can't be printed. Printer seems unreachable. Please check cable.")
+    #             return handle_incomming_messages()
+    # return "printing"
 
 @app.route("/api/print",  methods=['POST'])
 def post_messages():
@@ -290,7 +301,7 @@ def reset_printstatus():
                 allPosts.append([doc.id, doc.to_dict()])
             return True
         except:
-            print 'No such document found'
+            print('No such document found')
             return False
 
 
@@ -325,11 +336,6 @@ def reset_printstatus():
             return "Updating failed"
     else:
         return "Getting messages failed"
-
-
-
-
-
 
 
 if __name__ == '__main__':

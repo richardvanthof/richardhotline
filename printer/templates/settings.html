@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Settings</title>
+</head>
+<body>
+    <style>
+        ul, button {
+            diplay: inline;
+            padding: 1em 0;
+            margin: 0;
+
+        }
+        li, a, button {
+            display: inline;
+            padding: 1em;
+            color: black;
+            text-decoration: none;
+            border-radius: 100rem;
+        }
+        li, button {
+            margin-right: 0.5em;
+            transition: 0.3s ease;
+            background-color: rgba(0,0,0,0.05);
+            box-shadow: 0em 0em rgba(0,0,0,0);
+        }
+
+        li:hover, button:hover {
+            background-color: aquamarine;
+            box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.05);
+        }
+        h2 {
+            margin-left: 0.35em
+        }
+        label, button {
+            display: block;
+            margin: 1em;
+        }
+    </style>
+    <a style="display: inline-block" href="/">[Back]</a>
+    <div style="padding: 5em; max-width: 75em">
+    <h1 style="color: rgba(0,0,0,0.8); font-size: 5em; line-height: 0.66em">Settings</h1>
+    <form>
+        <label>Enable Print Server<input type="checkbox" value="enable-printer"></label>
+        <button type="submit">Save</button>
+    </form>
+    </div>
+</body>
+</html>
