@@ -131,7 +131,7 @@ class App extends React.Component {
                         />
                     </main>
                     <Footer />
-                    <PopUp
+                    {/* <PopUp
 
                         title="This app is currently in test mode"
                         description="We're implementing new features and improvements currentyle. Therefore this form is currently nog active. Sorry for the inconvenience."
@@ -140,7 +140,7 @@ class App extends React.Component {
                         <ul>
                             <li>Messages currently are not printed automaticially yet. This means that messages will not yet be delivered in realtime. Thet will be saved, though.</li>
                         </ul>
-                    </PopUp>
+                    </PopUp> */}
                 </ErrorBoundary>
             </Body>
         )

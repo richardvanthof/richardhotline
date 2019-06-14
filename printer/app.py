@@ -29,159 +29,6 @@ isActive = True
 messages = []
 
 app = Flask(__name__)
-
-def detectPrinter():
-    # Checks if USB Printer is available. If not, the dummy printer is used.
-    try:
-        p = Usb(0x0416, 0x5011)
-        print("👍   Printer Detected")
-        return p
-    except:
-        print("⚠️   NO PRINTER DETECTED. Skipping message...")
-        print("     Please check the USB-cable")
-        return False
-
-def getData():
-    print('Fetching...')
-    del messages[:]
-    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False).order_by(u'timestamp')
-    # print(messages)
-    try:
-            docs = db_ref.get()
-            for doc in docs:
-                messages.append([doc.id, doc.to_dict()])
-            # print("Print que: " + str(messages))
-
-    except google.cloud.exceptions.NotFound:
-            print('No such document found in the Database')
-
-def update_firebase_message(messageID):
-    print("☑️   Updating print status" + messageID)
-    try:
-        doc_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').document(messageID)
-        doc_ref.update({
-            'printed': True
-        })
-        return True
-    except:
-        return "Google Cloud could not be reached"
-
-def delete_from_printque(message):
-    try:
-
-        messageIndex = messages.index(message)
-        messages.remove(messages[messageIndex])
-        print("🗑   Deleted %s from print que"%(message[0]))
-        return True
-    except(Exception):
-        print(env)
-        return False
-
-async def printMessage(data, device):
-    p = device
-    timestamp = str(data.get('date'))
-    name = str(data.get('name'))
-    contact = str(data.get('contact'))
-    message = str(data.get('''message'''))
-    print("🖨   Printing message from %s"%(name))
-
-    # body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)
-    try:
-        p.text("""
-IMPORTANT MESSAGE:
-%s
-
-By: %s
-
-%s
-
-
-Contact:
-%s
-
- _______________________________
-===============================
-        """% (timestamp, name, message, contact))
-        return True
-    except:
-        return False
-
-
-
-async def main():
-    while isActive:
-        mssgCounter = len(messages)
-        while(mssgCounter <= 0):
-            getData()
-            mssgCounter = len(messages)
-            await asyncio.sleep(5)
-
-        for message in messages:
-            mssgId = message[0]
-            mssgContent = message[1]
-            printer = detectPrinter()
-            await printMessage(mssgContent, printer)
-            update_firebase_message(mssgId)
-            delete_from_printque(message)
-            mssgCounter = len(messages)
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-loop = asyncio.get_event_loop()
-try:
-    asyncio.ensure_future(main())
-    loop.run_forever()
-except KeyboardInterrupt:
-    pass
-finally:
-    print("Closing Loop")
-    loop.close()
-
-
-
-
-
-app.debug = True
-
-
-
-
-
-
-
-
-
-def fetch():
-    while(messages <= 0):
-        get_data()
-    while(messages > 0):
-        try:
-            handle_incomming_messages()
-        except:
-            fetch();
-
-
-
-def init():
-    try:
-        handle_incomming_messages()
-    except:
-        get_data()
-
-
-
 @app.route("/")
 def new():
     return render_template('start.html')
@@ -336,6 +183,128 @@ def reset_printstatus():
             return "Updating failed"
     else:
         return "Getting messages failed"
+# Checks if printer is connected. If not this function will return an error (BUG: build in a right error) that prevents printing.
+def detectPrinter():
+    # Checks if USB Printer is available. If not, the dummy printer is used.
+    try:
+        p = Usb(0x0416, 0x5011)
+        print("👍   Printer Detected")
+        return p
+    except:
+        print("⚠️   NO PRINTER DETECTED. Skipping message...")
+        print("     Please check the USB-cable")
+        return False
+
+# Checks if new messages are prescent with a false 'printed' status; if so: they get downloaded and added to the 'messages' list
+def getData():
+    print('Fetching...')
+    del messages[:]
+    db_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').where(u'printed', u'==', False).order_by(u'timestamp')
+    # print(messages)
+    try:
+            docs = db_ref.get()
+            for doc in docs:
+                messages.append([doc.id, doc.to_dict()])
+            # print("Print que: " + str(messages))
+
+    except google.cloud.exceptions.NotFound:
+            print('No such document found in the Database')
+
+# Updates the 'printed' status in the database to true
+def update_firebase_message(messageID):
+    print("☑️   Updating print status" + messageID)
+    try:
+        doc_ref = db.collection(u'Users').document(u'Richard').collection(u'Messages').document(messageID)
+        doc_ref.update({
+            'printed': True
+        })
+        return True
+    except:
+        return "Google Cloud could not be reached"
+
+# Deletes message from the print que
+def delete_from_printque(message):
+    try:
+
+        messageIndex = messages.index(message)
+        messages.remove(messages[messageIndex])
+        print("🗑   Deleted %s from print que"%(message[0]))
+        return True
+    except(Exception):
+        print(env)
+        return False
+
+# Function that prints the messages from the message contents (data: JS object) to the specified device (device)
+async def printMessage(data, device):
+    p = device
+    timestamp = str(data.get('date'))
+    name = str(data.get('name'))
+    contact = str(data.get('contact'))
+    message = str(data.get('''message'''))
+    print("🖨   Printing message from %s"%(name))
+
+    # body = "PARSED DATA: name: %s, contact: %s, message: %s" % (name, contact, message)
+    try:
+        p.text("""
+IMPORTANT MESSAGE:
+%s
+
+By: %s
+
+%s
+
+
+Contact:
+%s
+
+ _______________________________
+===============================
+        """% (timestamp, name, message, contact))
+        return True
+    except:
+        return False
+
+
+# Main functions that get executed into the event loop
+async def main():
+    while isActive:
+        mssgCounter = len(messages)
+        while(mssgCounter <= 0):
+            getData()
+            mssgCounter = len(messages)
+            await asyncio.sleep(5)
+
+        for message in messages:
+            mssgId = message[0]
+            mssgContent = message[1]
+            printer = detectPrinter()
+            await printMessage(mssgContent, printer)
+            update_firebase_message(mssgId)
+            delete_from_printque(message)
+            mssgCounter = len(messages)
+    
+
+# Create event loop that makes the scrips for the print server loop forever.
+loop = asyncio.get_event_loop()
+try:
+    asyncio.ensure_future(main())
+    loop.run_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    print("Closing Loop")
+    loop.close()
+
+
+
+
+
+app.debug = True
+
+
+
+
+
 
 
 if __name__ == '__main__':

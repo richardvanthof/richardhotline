@@ -47,7 +47,7 @@ const FormHeader = styled.header`
 `
 
 const FormWrapper = styled.section`
-    background: rgba(0,155,100,0.58);
+    background: rgba(0,155,100,0.95);
     margin: 0;
     padding:1em;
     width: 100%;
@@ -205,6 +205,29 @@ class Form extends React.Component {
             progress: ' '
         });
     }
+    isValid = (data) => {
+        return new Promise((resolve, reject)=>{
+            try {
+                // Verifies if input is filled in
+                if(data.name.length <= 0 || data.contact.length <= 0
+                    || data.message.length <= 0){
+                    throw new EvalError ("Please, fill in all the fields")
+                }
+                if( data.name.length > this.props.maxTextFieldLength ||
+                    data.contact.length > this.props.maxTextFieldLength){
+                    throw new EvalError("No name, email or phone number should be that long! Make them shorter, you hacker :)")
+                    }
+                // Checks if input has no more charakters than specified in this.maxLength
+                if( data.message.length > this.props.maxTextAreaLength){
+                    throw new EvalError("Please, make your message shorter")
+                }
+            } catch(e) {
+                console.log(e)
+                reject(e)
+            }
+            resolve()
+        })
+    }
 
     async handleSubmit(){
         // Check of content is valid
@@ -227,7 +250,10 @@ class Form extends React.Component {
         }
         const post = getData();
         console.log(post)
-        submit(post)
+        this.isValid(post)
+        .then(()=>{
+            submit(post)
+        })
         .then((docRef)=> {
             console.log(docRef)
             this.setState(state => ({
@@ -285,7 +311,7 @@ class Form extends React.Component {
                         <FormBase>
 
                             <FormHeader>
-                                <h1>Form version 2 [DEV]</h1>
+                                <h1>Send a message</h1>
                                 <Cross onClick={this.toggleDisplay}/>
                             </FormHeader>
                             <FormInput
