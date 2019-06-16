@@ -22,8 +22,8 @@ Since I'm not really prone to look at my phone, people often can't reach me. Thi
 
 ### Start Print Server
 
-<code>FLASK_APP=app.py FLASK_DEBUG=1 python -m flask run</code>
-FLASK_APP=app.py FLASK_DEBUG=1 python -m flask run
+<code>FLASK_APP=app.py FLASK_DEBUG=1 python3 -m flask run</code>
+
 ### REST API
 
 To send messages to the printer with the REST API.

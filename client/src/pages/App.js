@@ -6,7 +6,7 @@ import Typography from 'typography'
 import Footer from '../components/Footer';
 import Nav from '../components/Nav';
 import Button from '../components/Button';
-import Form from '../components/Form';
+import Form from '../components/Form.v2';
 import PopUp from '../components/PopUp';
 import Notification from '../components/Notification';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -131,18 +131,16 @@ class App extends React.Component {
                         />
                     </main>
                     <Footer />
-                    <PopUp
+                    {/* <PopUp
 
-                        title="Nobody is perfect, and especially not this app"
-                        description="Thank you for testing the Richard Hotline.
-                        Please take note that this program is still in development.
-                        This means that some bugs might occur"
+                        title="This app is currently in test mode"
+                        description="We're implementing new features and improvements currentyle. Therefore this form is currently nog active. Sorry for the inconvenience."
                     >
                         <h3>Known errors</h3>
                         <ul>
                             <li>Messages currently are not printed automaticially yet. This means that messages will not yet be delivered in realtime. Thet will be saved, though.</li>
                         </ul>
-                    </PopUp>
+                    </PopUp> */}
                 </ErrorBoundary>
             </Body>
         )

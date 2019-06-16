@@ -4,28 +4,25 @@ import fetch from 'node-fetch';
 
 const height = '25rem'
 
-const Placeholder = styled.div`
-    width: 100%;
-    height: 100%;
-    min-height: ${height};
-    background: rgba(255,255,255,0.75);
-    position: relative;
-    left: 0;
-    top: 0;
-`
+
 
 const EmbedWrapper = styled.div`
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    position: relative;
+    height: 0;
+    padding-bottom: 20%;
+    background: rgba(255,255,255,0.1);
     border: none;
+    padding-top: 36%;
     margin-bottom: 1em;
+}
     iframe {
-        border: none;
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        min-height: ${height};
         animation: 1s fadeIn ease-in-out;
+        border: none;
         @keyframes fadeIn {
             0% {
                 opacity: 0;
@@ -39,28 +36,12 @@ const EmbedWrapper = styled.div`
 
 const Embed = (props) => {
 
-    let loaded = false;
-    const content = async (url) => {
-        console.log("fetching video: "+url)
-        let source = await fetch(url);
-        loaded = true;
-        console.log(source);
-        return source
-    }
-    if(loaded) {
-        return (
-            <EmbedWrapper>
-                <iframe title="video" src={content(props.src)}/>
-            </EmbedWrapper>
-        )
-    } else {
-        return (
-            <EmbedWrapper>
-                <iframe title="video" src={props.src}/>
-            </EmbedWrapper>
+    return (
+        <EmbedWrapper>
+            <iframe title="video" src={props.src}/>
+        </EmbedWrapper>
 
-        )
-    }
+    )
 }
 
 export default Embed;

@@ -122,7 +122,6 @@ class Form extends React.Component {
 
     getNotifications() {
         const { notifications } = this.state;
-        console.log(notifications);
         return notifications.map(notification => (
             <Notification
                 type={notification.type}
@@ -147,9 +146,8 @@ class Form extends React.Component {
         this.setState({ notifications: [] });
     }
 
-    getPopUp = () => {
+    getPopUp = (m) => {
         const progress = this.state.progress;
-        console.log(progress)
         switch (progress) {
             case 'loading':
                 return (
@@ -173,7 +171,7 @@ class Form extends React.Component {
                     <PopUp
                         title="Your message is being printed"
                     >
-                        <Embed src="https://player.twitch.tv/?channel=bobross"/>
+                        <Embed src="https://www.youtube.com/embed/7R9HcaDT9P4" autoplay allowfullscreen/>
                         <p>Your work here is done. We are going to deliver your
                             message as soon as possible. For in the meantime,
                             let's watch some Bob Ross</p>
@@ -237,7 +235,9 @@ class Form extends React.Component {
     submit = (post) => {
         // Link firebase
         const db = firebase.firestore();
+        let addMessage = firebase.functions().httpsCallable('addMessage');
         const USER = "Richard";
+
 
         return new Promise((resolve, reject) => {
 
@@ -246,13 +246,22 @@ class Form extends React.Component {
                 console.log("Message saved with ID: ", docRef.id);
                 resolve()
             })
+            .then(()=>{
+                console.log("TEST#1")
+                addMessage(post)
+                .then((result) => {
+                    console.log("TESTED RESULT:"+result.message)
+                    alert(result)
+                }).catch((err)=>{
+                    console.log("FAILED TEST#1: "+ err.message)
+                    alert(err.message)
+                })
+            })
             .catch((e)=>{
                 reject(e)
             })
         })
     }
-
-
 
     handleSubmit = async () => {
         const displayLoadScreen = () => {
@@ -294,6 +303,9 @@ class Form extends React.Component {
                 this.setState(state => ({
                     progress: 'failed'
                 }))
+                console.log(err);
+                this.addNotification('error', err.message)
+
             })
         }
 
