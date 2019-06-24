@@ -100,8 +100,7 @@ class Form extends React.Component {
             progress: 'finished',
             name: '',
             contact: '',
-            message: '',
-            date: ''
+            message: ''
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -110,8 +109,6 @@ class Form extends React.Component {
         this.clearNotifications = this.clearNotifications.bind(this);
         this.maxLength = 150;
     }
-
-
 
     toggleDisplay = () =>{
         this.setState(state => ({
@@ -169,7 +166,7 @@ class Form extends React.Component {
                     <PopUp
                         title="Your message is being printed"
                     >
-                        <Embed src="https://www.youtube.com/embed/7R9HcaDT9P4" autoplay allowfullscreen/>
+                        <Embed src="https://player.twitch.tv/?channel=therichardhotline" autoplay allowfullscreen/>
                         <p>Your work here is done. We are going to deliver your
                             message as soon as possible. For in the meantime,
                             let's watch some Bob Ross</p>
@@ -195,7 +192,6 @@ class Form extends React.Component {
         this.setState({ popups: [] });
     }
 
-
     handleInputChange = (event) => {
         const target = event.target;
         const value = target.value;
@@ -205,6 +201,7 @@ class Form extends React.Component {
             progress: ' '
         });
     }
+
     isValid = (data) => {
         return new Promise((resolve, reject)=>{
             try {
@@ -221,6 +218,7 @@ class Form extends React.Component {
                 if( data.message.length > this.props.maxTextAreaLength){
                     throw new EvalError("Please, make your message shorter")
                 }
+
             } catch(e) {
                 console.log(e)
                 reject(e)
@@ -238,13 +236,15 @@ class Form extends React.Component {
             progress: 'loading'
         }))
         const getData = () => {
+
             // Get all message data and make JSON.
             let post = {
                 name: sanitizeHtml(this.state.name),
                 contact: sanitizeHtml(this.state.contact),
                 message: sanitizeHtml(this.state.message),
-                timestamp: this.state.date,
-                printed: false
+                created: new Date()
+                // The items below are set on the server side
+                // printed: false
             }
             return post;
         }
@@ -255,7 +255,6 @@ class Form extends React.Component {
             submit(post)
         })
         .then((docRef)=> {
-            console.log(docRef)
             this.setState(state => ({
                 progress: 'success'
             }))
@@ -267,7 +266,6 @@ class Form extends React.Component {
                     name: '',
                     contact: '',
                     message: '',
-                    date: '',
                     notifications: []
                 }))
             }, 1000)
@@ -299,7 +297,6 @@ class Form extends React.Component {
             name: '',
             contact: '',
             message: '',
-            date: ''
         }));
     }
 

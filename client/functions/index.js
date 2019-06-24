@@ -5,6 +5,8 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const sanitizeHtml = require('sanitize-html');
 
+const gax = require('google-gax');
+
 admin.initializeApp(functions.config().firebase);
 let db = admin.firestore();
 
@@ -56,8 +58,8 @@ let sanitize = (data) => {
         name: sanitizeHtml(data.name),
         contact: sanitizeHtml(data.contact),
         message: sanitizeHtml(data.message),
-        timestamp: data.timestamp,
-        printed: data.printed
+        timestamp: admin.firestore.Timestamp.now(),
+        printed: false
     }
     return post;
 }
@@ -74,11 +76,23 @@ exports.addMessage = functions.https.onCall(async (req, res) => {
         const submit = await db.collection('Users/Richard/Messages').add(sanitizedPost);
         return {
             posted: true,
-            id: submit.id
-        }
+            id: submit.id,
+            post: sanitizedPost
+        };
     } catch(err) {
         console.log("SERVER ERROR: "+ err)
         return err
     }
 });
+
+console.log(gax);
+// exports.isPrinted = functions.https.onClall(async (req, res)=>{
+//     let docID = req;
+//     const submittedMessage = db.collection(`Users/Richard/Messages/${docID}`);
+//     submittedMessage.onUpdate(change => {
+//         if(change.printed === true){
+//             return {success: true}
+//         }
+//     })
+// });
 
