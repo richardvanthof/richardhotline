@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import sanitizeHtml from 'sanitize-html';
 
 import Button from '../components/Button';
 import Notification from '../components/Notification';
@@ -239,9 +238,9 @@ class Form extends React.Component {
 
             // Get all message data and make JSON.
             let post = {
-                name: sanitizeHtml(this.state.name),
-                contact: sanitizeHtml(this.state.contact),
-                message: sanitizeHtml(this.state.message),
+                name: this.state.name,
+                contact: this.state.contact,
+                message: this.state.message,
                 created: new Date()
                 // The items below are set on the server side
                 // printed: false

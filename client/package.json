@@ -13,10 +13,12 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
+    "sanitize-html": "^2.11.0",
     "styled-components": "^4.3.2",
     "typography": "^0.16.19"
   },
   "scripts": {
+    "emulate": "firebase emulators:start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

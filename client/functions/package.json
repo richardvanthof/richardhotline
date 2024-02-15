@@ -6,12 +6,11 @@
     "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
     "dev": "npm run shell",
-    "emulate": "firebase emulators:start",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "8"
+    "node": "10"
   },
   "dependencies": {
     "cors": "^2.8.5",
